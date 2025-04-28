@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cryptocal Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+  <!-- Top Navigation -->
+  <header class="w-full bg-white shadow px-6 py-4 flex items-center justify-between">
+    <div class="flex items-center space-x-2">
+      <span class="text-gray-400">Dashboard</span>
+      <span class="mx-1">/</span>
+      <span class="font-semibold text-gray-700">Home</span>
+    </div>
+    <div class="flex-1 flex justify-center">
+      <input type="text" placeholder="Search" class="w-80 px-4 py-2 border rounded focus:outline-none focus:border-blue-400 text-sm bg-gray-50"/>
+    </div>
+    <div class="flex items-center space-x-4">
+      <a href="home.html" class="text-gray-500 hover:text-blue-600" title="Home">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3 12l2-2m0 0l7-7 7 7m-9 2v6m0 0h6m-6 0v6m6-6v6m0 0h6m-6 0v6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+      <a href="index.html" class="text-gray-500 hover:text-blue-600" title="Calendar">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <rect x="3" y="4" width="18" height="18" rx="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M16 2v4M8 2v4M3 10h18" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+      <button class="text-gray-500 hover:text-blue-600" title="Menu">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="1.5"/>
+          <circle cx="19.5" cy="12" r="1.5"/>
+          <circle cx="4.5" cy="12" r="1.5"/>
+        </svg>
+      </button>
+      <button class="text-gray-500 hover:text-blue-600" title="Notifications">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <button class="text-gray-500 hover:text-blue-600" title="Profile">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <circle cx="12" cy="7" r="4"/>
+          <path d="M5.5 21a8.38 8.38 0 0113 0" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+  <!-- Dashboard Content -->
+  <main class="flex-1 w-full max-w-7xl mx-auto px-4 py-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+      <!-- Card 1: Today's Money -->
+      <div class="bg-white rounded-lg shadow p-5 flex flex-col">
+        <div class="flex items-center space-x-3">
+          <div class="bg-gray-800 text-white rounded-full p-2">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <rect x="2" y="7" width="20" height="14" rx="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M16 3h-1a2 2 0 00-2 2v2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-gray-500 text-xs">Today's Money</span>
+            <span id="todayMoney" class="text-2xl font-bold">$0</span>
+          </div>
+        </div>
+        <span id="todayMoneyChange" class="text-green-600 text-sm mt-2">+0% vs last week</span>
+      </div>
+      <!-- Card 2: Total Earnings This Month -->
+      <div class="bg-white rounded-lg shadow p-5 flex flex-col">
+        <div class="flex items-center space-x-3">
+          <div class="bg-gray-800 text-white rounded-full p-2">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87M16 3.13a4 4 0 010 7.75M8 3.13a4 4 0 010 7.75" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-gray-500 text-xs">Total Earnings (This Month)</span>
+            <span id="totalEarnings" class="text-2xl font-bold">$0</span>
+          </div>
+        </div>
+        <span id="totalEarningsChange" class="text-gray-500 text-sm mt-2"></span>
+      </div>
+      <!-- Live Crypto Prices -->
+      <div class="bg-white rounded-lg shadow p-5 flex flex-col min-h-[180px]">
+        <div class="flex items-center space-x-3 mb-2">
+          <div class="bg-yellow-400 text-white rounded-full p-2">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M12 8v4l3 2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-gray-500 text-xs">Live Crypto Prices</span>
+            <span class="text-sm text-gray-400">Top Coins</span>
+          </div>
+        </div>
+        <div id="cryptoPrices" class="flex flex-col gap-2 mt-2 text-sm"></div>
+      </div>
+    </div>
+    <!-- Charts -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <!-- Website View -->
+      <div class="bg-white rounded-lg shadow p-5 flex flex-col">
+        <div class="flex flex-col h-full">
+          <canvas id="websiteViewChart" height="120"></canvas>
+          <div class="mt-4">
+            <div class="font-semibold">Website View</div>
+            <div class="text-gray-500 text-sm">Last Campaign Performance</div>
+            <div class="text-gray-400 text-xs mt-2 flex items-center">
+              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M17 16l4-4m0 0l-4-4m4 4H7" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              campaign sent 2 days ago
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Daily Sales -->
+      <div class="bg-white rounded-lg shadow p-5 flex flex-col">
+        <div class="flex flex-col h-full">
+          <canvas id="dailySalesChart" height="120"></canvas>
+          <div class="mt-4">
+            <div class="font-semibold">Daily Sales</div>
+            <div class="text-gray-500 text-sm">15% increase in today sales</div>
+            <div class="text-gray-400 text-xs mt-2 flex items-center">
+              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 6v6l4 2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              updated 4 min ago
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Completed Tasks -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="bg-white rounded-lg shadow p-5 flex flex-col">
+        <div class="flex flex-col h-full">
+          <canvas id="completedTasksChart" height="120"></canvas>
+          <div class="mt-4">
+            <div class="font-semibold">Completed Tasks</div>
+            <div class="text-gray-500 text-sm">Last Campaign Performance</div>
+          </div>
+        </div>
+      </div>
+      <div></div>
+    </div>
+  </main>
+  <!-- Floating Settings Button -->
+  <button class="fixed bottom-6 right-6 bg-white shadow-lg rounded-full p-3 hover:bg-gray-100">
+    <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path d="M12 15.5A3.5 3.5 0 1112 8.5a3.5 3.5 0 010 7zm7.94-2.06a1 1 0 00.26-1.09l-1.1-3.18a1 1 0 00-.76-.67l-3.45-.5a1 1 0 00-.89.27l-2.45 2.45a1 1 0 00-.27.89l.5 3.45a1 1 0 00.67.76l3.18 1.1a1 1 0 001.09-.26l2.45-2.45a1 1 0 00.27-.89z" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+  <script>
+    // --- Dashboard Data Calculation ---
+    function getCalendarProfits() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = now.getMonth() + 1;
+      let profits = [];
+      for (let day = 1; day <= 31; day++) {
+        const key = `entry-${year}-${month}-${day}-profit`;
+        const val = localStorage.getItem(key);
+        if (val !== null) profits.push({ day, profit: parseFloat(val) });
+      }
+      return profits;
+    }
+
+    function getLastWeekProfits() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = now.getMonth() + 1;
+      let profits = [];
+      const today = now.getDate();
+      for (let i = 6; i >= 0; i--) {
+        const day = today - i;
+        if (day > 0) {
+          const key = `entry-${year}-${month}-${day}-profit`;
+          const val = localStorage.getItem(key);
+          profits.push(val ? parseFloat(val) : 0);
+        }
+      }
+      return profits;
+    }
+
+    // --- Update Dashboard Cards ---
+    function updateDashboard() {
+      const profits = getCalendarProfits();
+      const todayDate = new Date();
+      const today = todayDate.getDate();
+      const month = todayDate.getMonth() + 1;
+      const year = todayDate.getFullYear();
+
+      // Today's profit
+      const todayProfit = profits.find(p => p.day === today)?.profit || 0;
+
+      // Calculate last week's same day profit
+      const lastWeekDay = today - 7;
+      let lastWeekProfit = 0;
+      if (lastWeekDay > 0) {
+        const key = `entry-${year}-${month}-${lastWeekDay}-profit`;
+        const val = localStorage.getItem(key);
+        lastWeekProfit = val ? parseFloat(val) : 0;
+      }
+      // Calculate % change from last week (same day)
+      let weekChange = 0;
+      if (lastWeekProfit !== 0) {
+        weekChange = ((todayProfit - lastWeekProfit) / Math.abs(lastWeekProfit) * 100).toFixed(0);
+      } else if (todayProfit !== 0) {
+        weekChange = 100;
+      }
+      document.getElementById("todayMoney").textContent = `$${todayProfit.toLocaleString()}`;
+      document.getElementById("todayMoneyChange").textContent = `${weekChange >= 0 ? "+" : ""}${weekChange}% vs last week`;
+      document.getElementById("todayMoneyChange").className = `text-${weekChange >= 0 ? "green" : "red"}-600 text-sm mt-2`;
+
+      // Total earnings for current month up to today
+      let totalEarnings = 0;
+      for (let d = 1; d <= today; d++) {
+        const key = `entry-${year}-${month}-${d}-profit`;
+        const val = localStorage.getItem(key);
+        if (val) totalEarnings += parseFloat(val);
+      }
+      document.getElementById("totalEarnings").textContent = `$${totalEarnings.toLocaleString()}`;
+
+      // Calculate same period last month
+      let prevMonth = month - 1;
+      let prevYear = year;
+      if (prevMonth === 0) {
+        prevMonth = 12;
+        prevYear = year - 1;
+      }
+      let prevMonthEarnings = 0;
+      for (let d = 1; d <= today; d++) {
+        const key = `entry-${prevYear}-${prevMonth}-${d}-profit`;
+        const val = localStorage.getItem(key);
+        if (val) prevMonthEarnings += parseFloat(val);
+      }
+      let monthChange = 0;
+      if (prevMonthEarnings !== 0) {
+        monthChange = ((totalEarnings - prevMonthEarnings) / Math.abs(prevMonthEarnings) * 100).toFixed(0);
+      } else if (totalEarnings !== 0) {
+        monthChange = 100;
+      }
+      // Show change or fallback message
+      if (prevMonthEarnings !== 0 || totalEarnings !== 0) {
+        document.getElementById("totalEarningsChange").textContent = `${monthChange >= 0 ? "+" : ""}${monthChange}% vs same period last month`;
+        document.getElementById("totalEarningsChange").className = `text-${monthChange >= 0 ? "green" : "red"}-600 text-sm mt-2`;
+      } else {
+        document.getElementById("totalEarningsChange").textContent = "No data for previous month";
+        document.getElementById("totalEarningsChange").className = "text-gray-500 text-sm mt-2";
+      }
+    }
+
+    // --- Chart.js Graphs ---
+    let websiteViewChart, dailySalesChart, completedTasksChart;
+
+    function updateCharts() {
+      const profits = getCalendarProfits();
+      const now = new Date();
+      const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+
+      // Website View: Bar chart for last 7 days
+      const lastWeek = getLastWeekProfits();
+      const weekLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+      if (websiteViewChart) websiteViewChart.destroy();
+      websiteViewChart = new Chart(document.getElementById('websiteViewChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+          labels: weekLabels,
+          datasets: [{
+            label: 'Profit',
+            data: lastWeek,
+            backgroundColor: '#4ade80',
+            borderRadius: 6,
+          }]
+        },
+        options: {
+          plugins: { legend: { display: false } },
+          scales: { y: { beginAtZero: true } }
+        }
+      });
+
+      // Daily Sales: Line chart for each month
+      let monthLabels = [];
+      let monthProfits = [];
+      for (let m = 0; m < 12; m++) {
+        let sum = 0;
+        for (let d = 1; d <= 31; d++) {
+          const key = `entry-${now.getFullYear()}-${m + 1}-${d}-profit`;
+          const val = localStorage.getItem(key);
+          if (val) sum += parseFloat(val);
+        }
+        monthLabels.push(['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][m]);
+        monthProfits.push(sum);
+      }
+      if (dailySalesChart) dailySalesChart.destroy();
+      dailySalesChart = new Chart(document.getElementById('dailySalesChart').getContext('2d'), {
+        type: 'line',
+        data: {
+          labels: monthLabels,
+          datasets: [{
+            label: 'Sales',
+            data: monthProfits,
+            borderColor: '#3b82f6',
+            backgroundColor: 'rgba(59,130,246,0.1)',
+            tension: 0.3,
+            fill: true,
+            pointRadius: 3,
+            pointBackgroundColor: '#3b82f6'
+          }]
+        },
+        options: {
+          plugins: { legend: { display: false } },
+          scales: { y: { beginAtZero: true } }
+        }
+      });
+
+      // Completed Tasks: Line chart for current month
+      let dayLabels = [];
+      let dayProfits = [];
+      for (let d = 1; d <= daysInMonth; d++) {
+        dayLabels.push(d);
+        const key = `entry-${now.getFullYear()}-${now.getMonth() + 1}-${d}-profit`;
+        const val = localStorage.getItem(key);
+        dayProfits.push(val ? parseFloat(val) : 0);
+      }
+      if (completedTasksChart) completedTasksChart.destroy();
+      completedTasksChart = new Chart(document.getElementById('completedTasksChart').getContext('2d'), {
+        type: 'line',
+        data: {
+          labels: dayLabels,
+          datasets: [{
+            label: 'Completed Tasks',
+            data: dayProfits,
+            borderColor: '#22c55e',
+            backgroundColor: 'rgba(34,197,94,0.1)',
+            tension: 0.3,
+            fill: true,
+            pointRadius: 2,
+            pointBackgroundColor: '#22c55e'
+          }]
+        },
+        options: {
+          plugins: { legend: { display: false } },
+          scales: { y: { beginAtZero: true } }
+        }
+      });
+    }
+
+    // --- Crypto Prices API ---
+    async function fetchCryptoPrices() {
+      const coins = ['bitcoin', 'ethereum', 'solana', 'dogecoin', 'binancecoin'];
+      const vs_currency = 'usd';
+      try {
+        const resp = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${coins.join(',')}&vs_currencies=${vs_currency}`);
+        const data = await resp.json();
+        const cryptoPricesDiv = document.getElementById('cryptoPrices');
+        cryptoPricesDiv.innerHTML = '';
+        coins.forEach(coin => {
+          const price = data[coin]?.usd;
+          if (price !== undefined) {
+            const name = coin.charAt(0).toUpperCase() + coin.slice(1);
+            cryptoPricesDiv.innerHTML += `
+              <div class="flex justify-between items-center">
+                <span class="font-semibold">${name}</span>
+                <span class="text-blue-600 font-mono">$${price.toLocaleString()}</span>
+              </div>
+            `;
+          }
+        });
+      } catch (e) {
+        document.getElementById('cryptoPrices').innerHTML = '<span class="text-red-500">Failed to load prices.</span>';
+      }
+    }
+
+    // --- Initial Render ---
+    updateDashboard();
+    updateCharts();
+    fetchCryptoPrices();
+
+    // --- Listen for changes in localStorage (from calendar) ---
+    window.addEventListener('storage', () => {
+      updateDashboard();
+      updateCharts();
+    });
+
+    // Optionally refresh crypto prices every 60 seconds
+    setInterval(fetchCryptoPrices, 60000);
+  </script>
+</body>
+</html>
