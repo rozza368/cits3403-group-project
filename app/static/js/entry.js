@@ -46,7 +46,7 @@ document.getElementById("saveBtn").addEventListener("click", () => {
     return;
     }
 
-    window.location.href = `index.html?month=${month}&year=${year}`;
+    window.location.href = `/index?month=${month}&year=${year}`;
 });
 
 imageInput.addEventListener("change", async (e) => {

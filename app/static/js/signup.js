@@ -9,7 +9,7 @@ signupForm.addEventListener("submit", (e) => {
     // Simulate signup (replace with real authentication logic)
     if (username && password) {
     localStorage.setItem("authToken", "dummyToken");
-    window.location.href = "index.html";
+    window.location.href = "/"; // Redirect to home page
     } else {
     alert("Please fill in all fields.");
     }
