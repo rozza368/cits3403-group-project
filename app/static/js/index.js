@@ -87,7 +87,7 @@ function renderCalendar(date) {
         } else {
         box.classList.add("cursor-pointer", "hover:bg-gray-100");
         box.addEventListener("click", () => {
-            window.location.href = `entry.html?day=${capturedDay}&month=${month + 1}&year=${year}&returnMonth=${month + 1}&returnYear=${year}`;
+            window.location.href = `/entry?day=${capturedDay}&month=${month + 1}&year=${year}&returnMonth=${month + 1}&returnYear=${year}`;
         });
         }
 

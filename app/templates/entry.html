@@ -12,7 +12,7 @@
 
       <!-- Header -->
       <div class="flex justify-between items-center mb-2">
-        <button onclick="window.location.href='index.html'"
+        <button onclick="window.location.href='/index'"
           class="bg-white text-blue-500 font-semibold py-2 px-4 rounded shadow hover:bg-gray-100 transition">
           ← Back
         </button>
@@ -67,6 +67,6 @@
     </div>
   </div>
 
-  <script src="js/entry.js"></script>
+  <script src="{{ url_for('static', filename='js/entry.js') }}"></script>
 </body>
 </html>
