@@ -3,6 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from app import app, db
 from app.models import User, Trade
 from datetime import datetime
+import requests
 
 @app.route('/')
 def home():
@@ -61,32 +62,22 @@ def signup():
             username = request.form.get('username')
             email = request.form.get('email')
             password = request.form.get('password')
-
-            # Validate form data
             if not username or not password:
                 flash('Username and password are required!', 'error')
                 return redirect(url_for('signup'))
-
-            # Check if username already exists
             existing_user = User.query.filter_by(username=username).first()
             if existing_user:
                 flash('Username already exists!', 'error')
                 return redirect(url_for('signup'))
-
-            # Hash the password
             hashed_password = generate_password_hash(password)
-
-            # Add user to the database
             new_user = User(username=username, email=email, password_hash=hashed_password)
             db.session.add(new_user)
             db.session.commit()
-
             flash('Account created successfully!', 'success')
             return redirect(url_for('login'))
         except Exception as e:
             flash('An error occurred while creating your account.', 'error')
             return redirect(url_for('signup'))
-
     return render_template('signup.html')
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -94,23 +85,17 @@ def login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-
-        # Validate form data
         if not username or not password:
             flash('Username and password are required!', 'error')
             return redirect(url_for('login'))
-
-        # Query the database for the user
         user = User.query.filter_by(username=username).first()
-
         if user and check_password_hash(user.password_hash, password):
-            session['user_id'] = user.user_id  # Store user ID in session
+            session['user_id'] = user.user_id  # or user.id depending on your model
             flash('Logged in successfully!', 'success')
             return redirect(url_for('home'))
         else:
             flash('Invalid username or password!', 'error')
             return redirect(url_for('login'))
-
     return render_template('login.html')
 
 @app.route('/logout', methods=['POST'])
@@ -148,3 +133,42 @@ def get_entry():
         }), 200
     except Exception as e:
         return jsonify({'error': 'An error occurred while fetching the entry.'}), 500
+    
+@app.route('/api/stats')
+def api_stats():
+    user_count = User.query.count()
+    trade_count = Trade.query.count()
+    return jsonify({'users': user_count, 'trades': trade_count})
+
+@app.route('/api/cryptonews')
+def api_cryptonews():
+    try:
+        url = "https://min-api.cryptocompare.com/data/v2/news/?lang=EN"
+        resp = requests.get(url, timeout=5)
+        resp.raise_for_status()
+        data = resp.json()
+        news = [
+            {
+                "title": n.get("title"),
+                "url": n.get("url"),
+                "published_on": n.get("published_on"),
+                "source": n.get("source")
+            }
+            for n in data.get("Data", [])[:6]
+        ]
+        return jsonify(news)
+    except Exception as e:
+        print("Crypto news error:", e)
+        return jsonify([]), 500
+
+@app.route('/api/cryptoprices')
+def api_cryptoprices():
+    try:
+        url = "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,binancecoin,cardano,dogecoin&vs_currencies=usd"
+        resp = requests.get(url, timeout=5)
+        resp.raise_for_status()
+        data = resp.json()
+        return jsonify(data)
+    except Exception as e:
+        print("Crypto prices error:", e)
+        return jsonify({}), 500
