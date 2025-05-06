@@ -15,5 +15,5 @@ class Trade(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
     trade_date = db.Column(db.Date, nullable=False)
     profit = db.Column(db.Integer, nullable=False)
-    image_url = db.Column(db.String(255), nullable=True)
+    image_path = db.Column(db.String(255), nullable=True)
     comment = db.Column(db.String(255), nullable=True)
