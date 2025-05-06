@@ -2,7 +2,7 @@ from flask import render_template, request, redirect, url_for, flash, session, j
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import app, db
 from app.models import User, Trade
-from datetime import datetime
+from datetime import datetime, timedelta
 import requests
 
 @app.route('/')
@@ -172,3 +172,39 @@ def api_cryptoprices():
     except Exception as e:
         print("Crypto prices error:", e)
         return jsonify({}), 500
+    
+@app.route('/api/profits', methods=['GET'])
+def get_profits():
+    try:
+        # Get the current date
+        now = datetime.now()
+        year = now.year
+        month = now.month
+        today = now.day
+
+        # Fetch profits for the current month
+        trades = Trade.query.filter(
+            Trade.user_id == session['user_id'],
+            db.extract('year', Trade.trade_date) == year,
+            db.extract('month', Trade.trade_date) == month
+        ).all()
+
+        # Format the data
+        profits = [{'day': trade.trade_date.day, 'profit': trade.profit} for trade in trades]
+
+        # Fetch profits for the last 7 days
+        last_week_start = now - timedelta(days=7)
+        last_week_trades = Trade.query.filter(
+            Trade.user_id == session['user_id'],
+            Trade.trade_date >= last_week_start.date(),
+            Trade.trade_date <= now.date()
+        ).all()
+
+        last_week_profits = [{'day': trade.trade_date.day, 'profit': trade.profit} for trade in last_week_trades]
+
+        return jsonify({
+            'month_profits': profits,
+            'last_week_profits': last_week_profits
+        }), 200
+    except Exception as e:
+        return jsonify({'error': 'An error occurred while fetching profits.'}), 500
