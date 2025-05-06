@@ -104,7 +104,6 @@ async function fetchUserList() {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const userList = await response.json();
-        console.log('User List:', userList);
         return userList;
     } catch (error) {
         console.error('Failed to fetch user list:', error);
@@ -256,14 +255,30 @@ document.getElementById('search-bar-top').addEventListener('focus', async functi
 
     if (userList && userList.length > 0) {
         dropdown.innerHTML = userList.map(user => `
-            <div class="px-4 py-2 hover:bg-gray-100 cursor-pointer">
+            <div class="px-4 py-2 hover:bg-gray-100 cursor-pointer search-item">
                 <div class="text-sm text-gray-700">${user}</div>
             </div>
         `).join('');
     } else {
-        dropdown.innerHTML = '<div class="px-4 py-2 text-sm text-gray-500">No users found</div>';
+        dropdown.innerHTML = '<div class="px-4 py-2 text-sm text-gray-500 search-item">No users found</div>';
     }
     dropdown.classList.remove('hidden');
+});
+
+// Filter dropdown menu based on search bar input
+document.getElementById('search-bar-top').addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase();
+    const dropdown = document.getElementById('search-dropdown');
+    const items = dropdown.querySelectorAll('.search-item');
+
+    items.forEach(item => {
+        const userName = item.textContent.toLowerCase();
+        if (userName.includes(searchTerm)) {
+            item.classList.remove('hidden');
+        } else {
+            item.classList.add('hidden');
+        }
+    });
 });
 
 // Close search bar dropdown when clicking outside
