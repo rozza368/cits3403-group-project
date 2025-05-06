@@ -97,6 +97,21 @@ function updateDashboard() {
     }
 }
 
+async function fetchUserList() {
+    try {
+        const response = await fetch('/api/user_list');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const userList = await response.json();
+        console.log('User List:', userList);
+        return userList;
+    } catch (error) {
+        console.error('Failed to fetch user list:', error);
+        return null;
+    }
+}
+
 // --- Chart.js Graphs ---
 let websiteViewChart, dailySalesChart, completedTasksChart;
 
@@ -232,3 +247,30 @@ window.addEventListener('storage', () => {
 
 // Optionally refresh crypto prices every 60 seconds
 setInterval(fetchCryptoPrices, 60000);
+
+// Display list of users upon clicking on search bar
+document.getElementById('search-bar-top').addEventListener('focus', async function() {
+    const userListResult = await fetchUserList();
+    const userList = userListResult["users"];
+    const dropdown = document.getElementById('search-dropdown');
+
+    if (userList && userList.length > 0) {
+        dropdown.innerHTML = userList.map(user => `
+            <div class="px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                <div class="text-sm text-gray-700">${user}</div>
+            </div>
+        `).join('');
+    } else {
+        dropdown.innerHTML = '<div class="px-4 py-2 text-sm text-gray-500">No users found</div>';
+    }
+    dropdown.classList.remove('hidden');
+});
+
+// Close search bar dropdown when clicking outside
+document.addEventListener('click', function(e) {
+    const searchBar = document.getElementById('search-bar-top');
+    const dropdown = document.getElementById('search-dropdown');
+    if (!searchBar.contains(e.target)) {
+        dropdown.classList.add('hidden');
+    }
+});

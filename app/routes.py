@@ -86,3 +86,9 @@ def logout():
     session.clear()
     flash('Log out successful.', 'success')
     return redirect(url_for('login'))
+
+@app.route('/api/user_list', methods=['GET'])
+def get_user_list():
+    users = User.query.with_entities(User.username).all()
+    user_list = {"users": [user[0] for user in users]}
+    return user_list
