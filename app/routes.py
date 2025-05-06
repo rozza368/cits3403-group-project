@@ -1,24 +1,57 @@
-from flask import render_template, request, redirect, url_for, flash, session
+from flask import render_template, request, redirect, url_for, flash, session, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import app, db
-from app.models import User
+from app.models import User, Trade
+from datetime import datetime
 
 @app.route('/')
 def home():
     if 'user_id' not in session:
         return redirect(url_for('login'))
+    
     return render_template('home.html')
 
 @app.route('/index')
 def index():
     if 'user_id' not in session:
         return redirect(url_for('login'))
+    
     return render_template('index.html')
 
-@app.route('/entry')
+@app.route('/entry', methods=['GET', 'POST'])
 def entry():
     if 'user_id' not in session:
         return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        try:
+            # Get data from the JSON request
+            data = request.json
+            date = data.get('date')
+            profit = data.get('profit')
+            notes = data.get('notes', '')
+
+            # Validate data
+            if not profit or not date:
+                return jsonify({'error': 'Profit and date are required!'}), 400
+
+            # Parse the date
+            trade_date = datetime.strptime(date, '%Y-%m-%d').date()
+
+             # Check if a trade already exists for this date and user
+            existing_trade = Trade.query.filter_by(user_id=session['user_id'], trade_date=trade_date).first()
+            if existing_trade:
+                return jsonify({'error': 'A trade already exists for this date!'}), 400
+
+            # Save the entry to the database
+            new_trade = Trade(user_id=session['user_id'], trade_date=trade_date, profit=float(profit), comment=notes)
+            db.session.add(new_trade)
+            db.session.commit()
+
+            return jsonify({'message': 'Entry saved successfully!'}), 200
+        except Exception as e:
+            return jsonify({'error': 'An error occurred while saving the entry.'}), 500
+
     return render_template('entry.html')
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -81,8 +114,37 @@ def login():
     return render_template('login.html')
 
 @app.route('/logout', methods=['POST'])
-# Clear the session and redirect the user to the login page
 def logout():
     session.clear()
     flash('Log out successful.', 'success')
+
     return redirect(url_for('login'))
+
+@app.route('/api/entry', methods=['GET'])
+def get_entry():
+    try:
+        # Get query parameters for the date
+        day = request.args.get('day')
+        month = request.args.get('month')
+        year = request.args.get('year')
+
+        # Validate the date
+        if not day or not month or not year:
+            return jsonify({'error': 'Invalid date parameters.'}), 400
+
+        # Construct the date object
+        entry_date = datetime.strptime(f"{year}-{month}-{day}", '%Y-%m-%d').date()
+
+        # Query the database for the entry
+        trade = Trade.query.filter_by(user_id=session['user_id'], trade_date=entry_date).first()
+
+        if not trade:
+            return jsonify({'profit': 0, 'notes': ''}), 200
+
+        # Return the entry data
+        return jsonify({
+            'profit': trade.profit,
+            'notes': trade.comment
+        }), 200
+    except Exception as e:
+        return jsonify({'error': 'An error occurred while fetching the entry.'}), 500
