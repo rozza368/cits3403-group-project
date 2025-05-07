@@ -7,7 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="bg-gray-100 min-h-screen flex flex-col">
+<body class="bg-gray-100 min-h-screen flex flex-col" style="padding-top:0">
   <!-- Top Navigation -->
   <header class="w-full bg-white shadow px-6 py-4 flex items-center justify-between">
     <div class="flex items-center space-x-2">
@@ -32,13 +32,14 @@
           <path d="M16 2v4M8 2v4M3 10h18" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </a>
-      <button class="text-gray-500 hover:text-blue-600" title="Menu">
+      <!-- TODO: change icon to something more intuitive -->
+      <a href="/feed" class="text-gray-500 hover:text-blue-600" title="Feed">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <circle cx="12" cy="12" r="1.5"/>
           <circle cx="19.5" cy="12" r="1.5"/>
           <circle cx="4.5" cy="12" r="1.5"/>
         </svg>
-      </button>
+      </a>
       <button class="text-gray-500 hover:text-blue-600" title="Notifications">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round"/>

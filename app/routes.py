@@ -104,6 +104,13 @@ def logout():
     flash('Log out successful.', 'success')
     return redirect(url_for('login'))
 
+@app.route('/feed')
+def feed():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    return render_template('feed.html')
+
 @app.route('/api/user_list', methods=['GET'])
 def get_user_list():
     users = User.query.with_entities(User.username).all()
