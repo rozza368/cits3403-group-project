@@ -17,3 +17,8 @@ class Trade(db.Model):
     profit = db.Column(db.Integer, nullable=False)
     image_path = db.Column(db.String(255), nullable=True)
     comment = db.Column(db.String(255), nullable=True)
+
+    # Composite unique constraint for user_id and trade_date
+    __table_args__ = (
+        db.UniqueConstraint('user_id', 'trade_date', name='unique_user_trade_date'),
+    )
