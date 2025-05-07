@@ -81,6 +81,20 @@ async function updateDashboard() {
     }
 }
 
+async function fetchUserList() {
+    try {
+        const response = await fetch('/api/user_list');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const userList = await response.json();
+        return userList;
+    } catch (error) {
+        console.error('Failed to fetch user list:', error);
+        return null;
+    }
+}
+
 // --- Chart.js Graphs ---
 let websiteViewChart, dailySalesChart, completedTasksChart;
 
@@ -172,3 +186,46 @@ window.addEventListener('storage', () => {
 
 // Optionally refresh crypto prices every 60 seconds
 setInterval(fetchCryptoPrices, 60000);
+
+// Display list of users upon clicking on search bar
+document.getElementById('search-bar-top').addEventListener('focus', async function() {
+    const userListResult = await fetchUserList();
+    const userList = userListResult["users"];
+    const dropdown = document.getElementById('search-dropdown');
+
+    if (userList && userList.length > 0) {
+        dropdown.innerHTML = userList.map(user => `
+            <div class="px-4 py-2 hover:bg-gray-100 cursor-pointer search-item">
+                <div class="text-sm text-gray-700">${user}</div>
+            </div>
+        `).join('');
+    } else {
+        dropdown.innerHTML = '<div class="px-4 py-2 text-sm text-gray-500 search-item">No users found</div>';
+    }
+    dropdown.classList.remove('hidden');
+});
+
+// Filter dropdown menu based on search bar input
+document.getElementById('search-bar-top').addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase();
+    const dropdown = document.getElementById('search-dropdown');
+    const items = dropdown.querySelectorAll('.search-item');
+
+    items.forEach(item => {
+        const userName = item.textContent.toLowerCase();
+        if (userName.includes(searchTerm)) {
+            item.classList.remove('hidden');
+        } else {
+            item.classList.add('hidden');
+        }
+    });
+});
+
+// Close search bar dropdown when clicking outside
+document.addEventListener('click', function(e) {
+    const searchBar = document.getElementById('search-bar-top');
+    const dropdown = document.getElementById('search-dropdown');
+    if (!searchBar.contains(e.target)) {
+        dropdown.classList.add('hidden');
+    }
+});
