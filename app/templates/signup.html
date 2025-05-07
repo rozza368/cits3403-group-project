@@ -3,29 +3,50 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login</title>
+  <title>Sign Up</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 text-gray-800 flex justify-center items-center min-h-screen">
   <div class="w-full max-w-md p-4 bg-white rounded-2xl shadow-md">
     <h2 class="text-2xl font-bold text-center mb-4">Sign Up</h2>
-    <form id="signupForm" class="space-y-4">
+    <form id="signupForm" method="POST" action="{{ url_for('signup') }}" class="space-y-4">
       <div>
         <label for="email" class="block text-sm font-medium">Email</label>
-        <input type="email" id="email" class="w-full border rounded-lg p-2" required />
+        <input type="email" id="email" name="email" class="w-full border rounded-lg p-2" required />
       </div>
       <div>
         <label for="username" class="block text-sm font-medium">Username</label>
-        <input type="text" id="username" class="w-full border rounded-lg p-2" required />
+        <input type="text" id="username" name="username" class="w-full border rounded-lg p-2" required />
       </div>
       <div>
         <label for="password" class="block text-sm font-medium">Password</label>
-        <input type="password" id="password" class="w-full border rounded-lg p-2" required />
+        <div class="relative">
+          <input type="password" id="password" name="password" class="w-full border rounded-lg p-2 pr-12" required />
+          <button type="button" onclick="togglePassword()" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+            <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0zm6 0c0 3.866-3.582 7-8 7s-8-3.134-8-7 3.582-7 8-7 8 3.134 8 7z" />
+            </svg>
+          </button>
+        </div>
       </div>
       <button type="submit" class="w-full bg-blue-500 text-white font-bold py-2 rounded-lg">Sign Up</button>
     </form>
   </div>
-
-  <script src="{{ url_for('static', filename='js/signup.js') }}"></script>
+  <script>
+    function togglePassword() {
+      const pwd = document.getElementById('password');
+      const icon = document.getElementById('eyeIcon');
+      if (pwd.type === 'password') {
+        pwd.type = 'text';
+        icon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M13.875 18.825A10.05 10.05 0 0112 19c-4.418 0-8-3.134-8-7a9.978 9.978 0 013.563-7.563M15 12a3 3 0 11-6 0 3 3 0 016 0zm6 0c0 1.657-.672 3.157-1.757 4.243M3 3l18 18" />`;
+      } else {
+        pwd.type = 'password';
+        icon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M15 12a3 3 0 11-6 0 3 3 0 016 0zm6 0c0 3.866-3.582 7-8 7s-8-3.134-8-7 3.582-7 8-7 8 3.134 8 7z" />`;
+      }
+    }
+  </script>
 </body>
 </html>
