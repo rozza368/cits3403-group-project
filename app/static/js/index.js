@@ -17,7 +17,21 @@ const monthNames = [
     "July", "August", "September", "October", "November", "December"
 ];
 
-function renderCalendar(date) {
+async function fetchProfits() {
+    try {
+        const response = await fetch('/api/profits');
+        if (!response.ok) {
+            console.error('Failed to fetch profits:', response.statusText);
+            return { month_profits: [], last_week_profits: [] };
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching profits:', error);
+        return { month_profits: [], last_week_profits: [] };
+    }
+}
+
+async function renderCalendar(date) {
     calendarGrid.innerHTML = "";
 
     const year = date.getFullYear();
@@ -48,95 +62,94 @@ function renderCalendar(date) {
     let weekRow = null;
     let nextDay = 1;
 
+    // Fetch profits for the current month
+    const { month_profits } = await fetchProfits();
+
     while (day <= lastDate || weekDayIndex % 7 !== 0) {
-    if (weekDayIndex % 7 === 0) {
-        if (weekRow) {
-        calendarGrid.appendChild(weekRow);
+        if (weekDayIndex % 7 === 0) {
+            if (weekRow) {
+                calendarGrid.appendChild(weekRow);
+            }
+            weekRow = document.createElement("div");
+            weekRow.className = "grid grid-cols-8 gap-2 items-stretch";
+            var weekProfit = 0;
         }
-        weekRow = document.createElement("div");
-        weekRow.className = "grid grid-cols-8 gap-2 items-stretch";
-        var weekProfit = 0;
-    }
 
-    let box = document.createElement("div");
+        let box = document.createElement("div");
 
-    const isBeforeFirst = weekDayIndex < firstDay && day === 1;
-    const isAfterLast = day > lastDate;
+        const isBeforeFirst = weekDayIndex < firstDay && day === 1;
+        const isAfterLast = day > lastDate;
 
-    if (isBeforeFirst) {
-        const prevDay = prevMonthLastDate - (firstDay - weekDayIndex - 1);
-        const key = `entry-${prevMonthYear}-${prevMonth + 1}-${prevDay}-profit`;
-        const savedProfit = localStorage.getItem(key);
+        if (isBeforeFirst) {
+            const prevDay = prevMonthLastDate - (firstDay - weekDayIndex - 1);
+            const savedProfit = month_profits.find(p => p.day === prevDay)?.profit || 0;
 
-        box.className = "border rounded-lg p-2 h-20 flex flex-col justify-start items-start relative bg-gray-100 text-gray-400 cursor-not-allowed";
-        box.innerHTML = `
-        <span class="absolute top-1 left-1 text-sm">${prevDay}</span>
-        <span class="mt-6 ml-1 text-sm text-green-500 font-medium">${savedProfit ? `$${savedProfit}` : ''}</span>
-        `;
-    } else if (!isAfterLast) {
-        const thisDate = new Date(year, month, day);
-        const dayOfWeek = thisDate.getDay(); // 0 = Sun, 6 = Sat
-        const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-        const isFuture = thisDate > today;
-        const capturedDay = day;
+            box.className = "border rounded-lg p-2 h-20 flex flex-col justify-start items-start relative bg-gray-100 text-gray-400 cursor-not-allowed";
+            box.innerHTML = `
+            <span class="absolute top-1 left-1 text-sm">${prevDay}</span>
+            <span class="mt-6 ml-1 text-sm text-green-500 font-medium">${savedProfit ? `$${savedProfit}` : ''}</span>
+            `;
+        } else if (!isAfterLast) {
+            const thisDate = new Date(year, month, day);
+            const dayOfWeek = thisDate.getDay(); // 0 = Sun, 6 = Sat
+            const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+            const isFuture = thisDate > today;
+            const capturedDay = day;
 
-        box.className = "border rounded-lg p-2 h-20 flex flex-col justify-start items-start relative";
+            box.className = "border rounded-lg p-2 h-20 flex flex-col justify-start items-start relative";
 
-        if (isWeekend || isFuture) {
-        box.classList.add("bg-gray-200", "text-gray-400", "cursor-not-allowed");
+            if (isWeekend || isFuture) {
+                box.classList.add("bg-gray-200", "text-gray-400", "cursor-not-allowed");
+            } else {
+                box.classList.add("cursor-pointer", "hover:bg-gray-100");
+                box.addEventListener("click", () => {
+                    window.location.href = `/entry?day=${capturedDay}&month=${month + 1}&year=${year}&returnMonth=${month + 1}&returnYear=${year}`;
+                });
+            }
+
+            box.innerHTML = `
+            <span class="absolute top-1 left-1 text-sm">${capturedDay}</span>
+            <span id="profit-${capturedDay}" class="mt-6 ml-1 text-sm font-medium"></span>
+            `;
+
+            if (thisDate.toDateString() === today.toDateString()) {
+                box.classList.add("border-4", "border-blue-500");
+            }
+
+            const savedProfit = month_profits.find(p => p.day === capturedDay)?.profit || 0;
+            if (savedProfit && !isWeekend) {
+                const profitEl = box.querySelector(`#profit-${capturedDay}`);
+                profitEl.textContent = `$${savedProfit}`;
+                profitEl.classList.add(savedProfit < 0 ? "text-red-600" : "text-green-600");
+                weekProfit += savedProfit;
+            }
+
+            day++;
         } else {
-        box.classList.add("cursor-pointer", "hover:bg-gray-100");
-        box.addEventListener("click", () => {
-            window.location.href = `/entry?day=${capturedDay}&month=${month + 1}&year=${year}&returnMonth=${month + 1}&returnYear=${year}`;
-        });
+            const savedProfit = month_profits.find(p => p.day === nextDay)?.profit || 0;
+
+            box.className = "border rounded-lg p-2 h-20 flex flex-col justify-start items-start relative bg-gray-100 text-gray-400 cursor-not-allowed";
+            box.innerHTML = `
+            <span class="absolute top-1 left-1 text-sm">${nextDay}</span>
+            <span class="mt-6 ml-1 text-sm text-green-500 font-medium">${savedProfit ? `$${savedProfit}` : ''}</span>
+            `;
+            nextDay++;
         }
 
-        box.innerHTML = `
-        <span class="absolute top-1 left-1 text-sm">${capturedDay}</span>
-        <span id="profit-${capturedDay}" class="mt-6 ml-1 text-sm font-medium"></span>
-        `;
+        weekRow.appendChild(box);
+        weekDayIndex++;
 
-        if (thisDate.toDateString() === today.toDateString()) {
-        box.classList.add("border-4", "border-blue-500");
+        if (weekDayIndex % 7 === 0) {
+            const totalBox = document.createElement("div");
+            const profitClass = weekProfit >= 0 ? "text-green-600" : "text-red-600";
+            totalBox.className = `bg-blue-50 ${profitClass} text-sm font-semibold flex items-center justify-center border rounded-lg h-20 px-2 whitespace-nowrap`;
+            totalBox.textContent = `$${weekProfit.toLocaleString()}`;
+            weekRow.appendChild(totalBox);
         }
-
-        const key = `entry-${year}-${month + 1}-${capturedDay}-profit`;
-        const savedProfit = localStorage.getItem(key);
-        if (savedProfit && !isWeekend) {
-        const profitVal = parseFloat(savedProfit);
-        const profitEl = box.querySelector(`#profit-${capturedDay}`);
-        profitEl.textContent = `$${profitVal}`;
-        profitEl.classList.add(profitVal < 0 ? "text-red-600" : "text-green-600");
-        weekProfit += profitVal;
-        }
-
-        day++;
-    } else {
-        const key = `entry-${nextMonthYear}-${nextMonth + 1}-${nextDay}-profit`;
-        const savedProfit = localStorage.getItem(key);
-
-        box.className = "border rounded-lg p-2 h-20 flex flex-col justify-start items-start relative bg-gray-100 text-gray-400 cursor-not-allowed";
-        box.innerHTML = `
-        <span class="absolute top-1 left-1 text-sm">${nextDay}</span>
-        <span class="mt-6 ml-1 text-sm text-green-500 font-medium">${savedProfit ? `$${savedProfit}` : ''}</span>
-        `;
-        nextDay++;
-    }
-
-    weekRow.appendChild(box);
-    weekDayIndex++;
-
-    if (weekDayIndex % 7 === 0) {
-        const totalBox = document.createElement("div");
-        const profitClass = weekProfit >= 0 ? "text-green-600" : "text-red-600";
-        totalBox.className = `bg-blue-50 ${profitClass} text-sm font-semibold flex items-center justify-center border rounded-lg h-20 px-2 whitespace-nowrap`;
-        totalBox.textContent = `$${weekProfit.toLocaleString()}`;
-        weekRow.appendChild(totalBox);
-    }
     }
 
     if (weekRow) {
-    calendarGrid.appendChild(weekRow);
+        calendarGrid.appendChild(weekRow);
     }
 }
 
