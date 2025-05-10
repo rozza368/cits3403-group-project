@@ -3,6 +3,7 @@ from flask import send_from_directory, abort
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import app, db
 from app.models import User, Trade
+from app.db_tools import can_user_access_image, generate_feed_items, get_ids_from_filename
 from datetime import datetime, timedelta
 import requests
 import os
@@ -140,12 +141,14 @@ def protected_image(filename):
         flash('You must be logged in to view this image.', 'error')
         return redirect(url_for('login'))
 
-    # TODO: add more checks here for specific user permissions
-
     img_dir = os.path.join(app.root_path, 'static', 'img')
     if not os.path.isfile(os.path.join(img_dir, filename)):
         abort(404)
-    return send_from_directory(img_dir, filename)
+
+    author_id, image_id = get_ids_from_filename(filename)
+    if can_user_access_image(session['user_id'], image_id):
+        return send_from_directory(img_dir, filename)
+    return jsonify({'error': 'Not authorised to access this file'}), 403
 
 @app.route('/api/user_list', methods=['GET'])
 def get_user_list():
