@@ -2,13 +2,17 @@
 2025 Agile Web Development Project
 
 ## Purpose
-This web application is a trade journal designed for day traders. The primary focus of trading is not just on the strategies or techniques but also on the psychology behind the trades. Trading is said to be 10% about how to trade and 90% about controlling your emotions. The profitability of a trader largely depends on their emotional discipline and ability to learn from their experiences.
+This web application is a trade journal specifically designed for day traders, emphasizing not just trading strategies and techniques, but also the critical role of psychology in successful trading. While trading involves learning the right strategies, it is often said that 10% of trading is about technique and 90% is about controlling emotions. A trader’s profitability is heavily influenced by their emotional discipline and their ability to learn from both wins and losses.
 
-The key motto is: *"You don’t lose until you give up."* A loss, when following your plan, is seen as part of your strategy’s edge. However, it only holds value if you learn from it. 
+In day trading, you don’t truly lose until you give up. The real test of a trader’s success lies in how they respond after a losing trade. A loss, when executed according to a well-thought-out plan, is simply a part of your strategy’s edge. However, the value of a loss is only realized if you learn from it and refine your approach for the next trade.
 
-Journaling plays a crucial role in a trader's success. This app allows traders to upload their profits and attach up to 5 images of their trades. This helps them review their actions objectively, outside the emotional context of the trade. Additionally, the journal reinforces better habits and builds confidence by reinforcing positive outcomes and identifying areas of improvement.
+Many traders end up blowing their accounts not because their setup failed, but because they let their emotions take control. They might over-leverage, chase trades, or act impulsively due to FOMO (fear of missing out) or greed, putting money above strategy. A $200 risk would not wipe out a $2,000 account if the trader stays disciplined. The journal helps traders avoid these pitfalls by providing a non-emotional space to reflect on past trades. It acts as a reminder to avoid the mistakes made in previous emotional states and helps them stick to their trading rules.
 
-The journal allows users to track emotions and assess whether they followed their own set rules using a tag system. The trade journal not only helps refine strategies and adapt to different market conditions but also builds the confidence to make better trading decisions, including managing trade size based on previous experiences.
+Journaling is essential to a trader’s growth. This app allows users to upload their profits and attach up to five images of their trades, enabling them to review their actions in an objective, emotion-free context. The journal not only reinforces good habits but also builds confidence by highlighting positive outcomes and identifying areas for improvement.
+
+Users can track their emotions and evaluate whether they’ve followed their personal trading rules through a tagging system. The journal also helps traders refine their strategies and adapt to changing market conditions, all while building the confidence needed to make informed, disciplined decisions.
+
+Additionally, the app includes a feature that allows users to share their monthly profit status in the form of an image. This encourages a healthy level of competition among friends and networks, motivating users to perform better. The desire to outperform others can fuel self-improvement, pushing traders to sharpen their skills and continue learning in the process.
 
 # Setup
 
