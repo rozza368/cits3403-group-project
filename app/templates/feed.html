@@ -53,7 +53,21 @@
     </div>
   </header>
   <main class="flex-1 w-full max-w-7xl mx-auto px-4 py-8">
-    <!-- main page here -->
+    {% for item in feed_items %}
+    <div class="bg-white rounded-lg shadow p-5 flex flex-col mb-6">
+      <div class="space-x-3">
+        {% if item['type'] == 'image' %}
+          <h1>Image</h1>
+          <img src="{{ url_for('static', filename='img/' + item['image']) }}" class="w-256 object-cover rounded" alt="Feed Image" />
+          <p>{{ item['content'] }}</p>
+        {% else %}
+          <h1>Post</h1>
+          <p>{{ item['content'] }}</p>
+        {% endif %}
+        <span class="text-gray-500 text-sm mt-2">Posted by {{ item['author'] }}</span>
+      </div>
+    </div>
+    {% endfor %}
   </main>
 </body>
 </html>

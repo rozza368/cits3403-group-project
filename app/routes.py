@@ -1,9 +1,11 @@
 from flask import render_template, request, redirect, url_for, flash, session, jsonify
+from flask import send_from_directory, abort
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import app, db
 from app.models import User, Trade
 from datetime import datetime, timedelta
 import requests
+import os
 
 @app.route('/')
 def home():
@@ -109,7 +111,41 @@ def feed():
     if 'user_id' not in session:
         return redirect(url_for('login'))
 
-    return render_template('feed.html')
+    #
+    # feed_items
+    #
+    # - type: can be post or image
+    # - content: the text that will be displayed in the post
+    # - image: the filename of the image, from `static/img/`
+    # - author: the name of the author of the post
+    #
+    feed_items = [
+        {
+            "type": "post",
+            "content": "hello",
+            "author": "Mike",
+        },
+        {
+            "type": "image",
+            "image": "test.png",
+            "content": "hello",
+            "author": "Alex",
+        },
+    ]
+    return render_template('feed.html', feed_items=feed_items)
+
+@app.route('/static/img/<filename>')
+def protected_image(filename):
+    if 'user_id' not in session:
+        flash('You must be logged in to view this image.', 'error')
+        return redirect(url_for('login'))
+
+    # TODO: add more checks here for specific user permissions
+
+    img_dir = os.path.join(app.root_path, 'static', 'img')
+    if not os.path.isfile(os.path.join(img_dir, filename)):
+        abort(404)
+    return send_from_directory(img_dir, filename)
 
 @app.route('/api/user_list', methods=['GET'])
 def get_user_list():
