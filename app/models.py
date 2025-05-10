@@ -22,3 +22,16 @@ class Trade(db.Model):
     __table_args__ = (
         db.UniqueConstraint('user_id', 'trade_date', name='unique_user_trade_date'),
     )
+
+class Image(db.Model):
+    __tablename__ = 'images'
+    image_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    author_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+
+class Share(db.Model):
+    __tablename__ = 'shares'
+    # either 'post' or 'image'
+    share_type = db.Column(db.String(10), primary_key=True)
+    # refers to either trades.trade_id or images.image_id depending on share_type.
+    trade_or_image_id = db.Column(db.Integer, primary_key=True, nullable=False)
+    user_id_shared_to = db.Column(db.Integer, db.ForeignKey('users.user_id'), primary_key=True, nullable=False)
