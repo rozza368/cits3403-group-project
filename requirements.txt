@@ -1,3 +1,4 @@
 flask
 flask-wtf
+Pillow
 flask-migrate
