@@ -16,6 +16,12 @@ def get_ids_from_filename(filename):
     return (int(author_id), int(share_id))
 
 def can_user_access_image(user_id, image_id):
+    # Check if the user is the author of the image
+    image = Image.query.filter_by(image_id=image_id).first()
+    if image and image.author_id == user_id:
+        return True
+
+    # Otherwise, check if the image is shared with the user
     share = Share.query.filter_by(
         user_id_shared_to=user_id,
         share_type="image",
