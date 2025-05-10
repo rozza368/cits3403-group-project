@@ -2,9 +2,10 @@ from flask import render_template, request, redirect, url_for, flash, session, j
 from flask import send_from_directory, abort
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import app, db
-from app.models import User, Trade
-from app.db_tools import can_user_access_image, generate_feed_items, get_ids_from_filename
+from app.models import User, Trade, Image
+from app.db_tools import can_user_access_image, generate_feed_items, get_ids_from_filename, get_image_filename_from_ids
 from datetime import datetime, timedelta
+from app.generate_image import create_image
 import requests
 import os
 
@@ -149,6 +150,39 @@ def protected_image(filename):
     if can_user_access_image(session['user_id'], image_id):
         return send_from_directory(img_dir, filename)
     return jsonify({'error': 'Not authorised to access this file'}), 403
+
+@app.route('/api/create_image', methods=['POST', 'GET'])
+def api_create_image():
+    if 'user_id' not in session:
+        return jsonify({'error': 'User not logged in.'}), 401
+
+    try:
+        # Get URL parameters
+        amount = request.args.get('amount')
+        date_range = request.args.get('date_range')
+
+        # Optionally, validate parameters
+        if not amount or not date_range:
+            return jsonify({'error': 'Missing required parameters: amount and date_range.'}), 400
+
+        # Generate a new image entry in the database
+        new_image = Image(author_id=session['user_id'])
+        db.session.add(new_image)
+        db.session.commit()
+
+        # Get filename for the image
+        filename = get_image_filename_from_ids(session['user_id'], new_image.image_id)
+        img_dir = os.path.join(app.root_path, 'static', 'img')
+        os.makedirs(img_dir, exist_ok=True)
+        file_path = os.path.join(img_dir, filename)
+
+        create_image(int(amount), date_range, file_path)
+
+        return jsonify({'message': 'Image created successfully.', 'filename': filename}), 201
+    except Exception as e:
+        print(e)
+        db.session.rollback()
+        return jsonify({'error': 'Failed to create image.'}), 500
 
 @app.route('/api/user_list', methods=['GET'])
 def get_user_list():
