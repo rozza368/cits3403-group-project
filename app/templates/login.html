@@ -6,6 +6,12 @@
   <title>Login | Cryptocal</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
+    @font-face {
+      font-family: 'Coolvetica';
+      src: url('{{ url_for('static', filename='fonts/Coolvetica Rg.otf') }}') format('opentype');
+      font-weight: normal;
+      font-style: normal;
+    }
     /* Custom background shapes */
     .bg-shape1 {
       position: absolute;
@@ -43,16 +49,88 @@
       z-index: 0;
       filter: blur(2px);
     }
+
+    .particle {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background-color: #3dff90;
+      border-radius: 50%;
+      opacity: 0;
+      animation: floatUp 15s linear infinite;
+      animation-fill-mode: both;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) translateX(0);
+        opacity: 0;
+      }
+      10% {
+        opacity: 0.6;
+      }
+      50% {
+        opacity: 0.3;
+        transform: translateY(-100vh) translateX(20px);
+      }
+      100% {
+        transform: translateY(-200vh) translateX(-20px);
+        opacity: 0;
+      }
+    }
+
+
+
+
+
+
+
   </style>
 </head>
-<body class="relative min-h-screen bg-gradient-to-br from-[#e0e7ff] via-[#fdf6e3] to-[#f7fbe8] flex flex-col overflow-x-hidden">
+<body class="relative min-h-screen bg-cover bg-center flex flex-col overflow-x-hidden" style="background-image: url('{{ url_for('static', filename='images/background.png') }}');">
+  <!-- Floating Particles -->
+  <div class="particle" style="top: 105%; left: 5%; animation-duration: 14s; animation-delay: 0s;"></div>
+  <div class="particle" style="top: 110%; left: 10%; animation-duration: 16s; animation-delay: 2s;"></div>
+  <div class="particle" style="top: 115%; left: 15%; animation-duration: 18s; animation-delay: 4s;"></div>
+  <div class="particle" style="top: 102%; left: 20%; animation-duration: 12s; animation-delay: 1s;"></div>
+  <div class="particle" style="top: 108%; left: 25%; animation-duration: 20s; animation-delay: 3s;"></div>
+  <div class="particle" style="top: 112%; left: 30%; animation-duration: 15s; animation-delay: 5s;"></div>
+  <div class="particle" style="top: 118%; left: 35%; animation-duration: 17s; animation-delay: 2s;"></div>
+  <div class="particle" style="top: 100%; left: 40%; animation-duration: 19s; animation-delay: 0s;"></div>
+  <div class="particle" style="top: 110%; left: 45%; animation-duration: 13s; animation-delay: 6s;"></div>
+  <div class="particle" style="top: 115%; left: 50%; animation-duration: 16s; animation-delay: 1s;"></div>
+  <div class="particle" style="top: 120%; left: 55%; animation-duration: 18s; animation-delay: 4s;"></div>
+  <div class="particle" style="top: 105%; left: 60%; animation-duration: 14s; animation-delay: 2s;"></div>
+  <div class="particle" style="top: 110%; left: 65%; animation-duration: 20s; animation-delay: 3s;"></div>
+  <div class="particle" style="top: 108%; left: 70%; animation-duration: 15s; animation-delay: 5s;"></div>
+  <div class="particle" style="top: 112%; left: 75%; animation-duration: 17s; animation-delay: 0s;"></div>
+  <div class="particle" style="top: 118%; left: 80%; animation-duration: 19s; animation-delay: 6s;"></div>
+  <div class="particle" style="top: 100%; left: 85%; animation-duration: 13s; animation-delay: 1s;"></div>
+  <div class="particle" style="top: 115%; left: 90%; animation-duration: 16s; animation-delay: 4s;"></div>
+  <div class="particle" style="top: 105%; left: 95%; animation-duration: 18s; animation-delay: 2s;"></div>
+  <div class="particle" style="top: 110%; left: 3%; animation-duration: 14s; animation-delay: 3s;"></div>
+  <div class="particle" style="top: 120%; left: 8%; animation-duration: 20s; animation-delay: 5s;"></div>
+  <div class="particle" style="top: 118%; left: 13%; animation-duration: 15s; animation-delay: 0s;"></div>
+  <div class="particle" style="top: 105%; left: 18%; animation-duration: 17s; animation-delay: 6s;"></div>
+  <div class="particle" style="top: 110%; left: 23%; animation-duration: 19s; animation-delay: 1s;"></div>
+  <div class="particle" style="top: 115%; left: 28%; animation-duration: 13s; animation-delay: 4s;"></div>
+  <div class="particle" style="top: 120%; left: 33%; animation-duration: 16s; animation-delay: 2s;"></div>
+  <div class="particle" style="top: 108%; left: 38%; animation-duration: 18s; animation-delay: 3s;"></div>
+  <div class="particle" style="top: 112%; left: 43%; animation-duration: 14s; animation-delay: 5s;"></div>
+  <div class="particle" style="top: 118%; left: 48%; animation-duration: 20s; animation-delay: 0s;"></div>
+  <div class="particle" style="top: 100%; left: 53%; animation-duration: 17s; animation-delay: 6s;"></div>
+
+
+
   <!-- Decorative Background Shapes -->
-  <div class="bg-shape1"></div>
-  <div class="bg-shape2"></div>
-  <div class="bg-shape3"></div>
+  <!--<div class="bg-shape1"></div>-->
+  <!--<div class="bg-shape2"></div>-->
+  <!--<div class="bg-shape3"></div>-->
   <!-- Top Bar -->
-  <header class="relative z-10 w-full flex items-center justify-between px-8 py-6">
-    <span class="text-3xl font-black text-purple-700 tracking-tight drop-shadow">Cryptocal</span>
+  <header class="relative z-10 w-full flex items-center justify-between px-8 py-6 bg-black text-white">
+
+    <img src="{{ url_for('static', filename='logo2.png') }}" alt="Cryptocal" class="h-10 drop-shadow">
+
     <div class="flex items-center space-x-4">
       <form method="POST" action="{{ url_for('login') }}" class="flex items-center space-x-2 bg-white/80 rounded-full px-4 py-2 shadow">
         <input
@@ -69,48 +147,51 @@
             </svg>
           </button>
         </div>
-        <button
-          class="tracking-wide font-semibold bg-gradient-to-r from-purple-500 to-pink-500 text-white px-5 py-2 rounded-full hover:from-purple-600 hover:to-pink-600 transition-all duration-300 ease-in-out focus:shadow-outline focus:outline-none"
-          type="submit">
+        <button class="tracking-wide font-semibold bg-[#3dff90] text-black px-5 py-2 rounded-full hover:brightness-90 transition-all duration-300 ease-in-out focus:shadow-outline focus:outline-none" type="submit">
           Sign In
         </button>
       </form>
-      <a href="{{ url_for('signup') }}" class="ml-2 text-purple-700 font-bold hover:underline text-lg">Sign Up</a>
+      <a href="{{ url_for('signup') }}" class="ml-2 font-bold hover:underline text-lg text-white">Sign Up</a>
     </div>
   </header>
   <!-- Main Section -->
   <main class="relative z-10 flex-1 flex flex-col items-center justify-center pt-8 pb-0">
     <div class="w-full max-w-4xl mx-auto text-center mb-10">
-      <h1 class="text-4xl font-black mb-4 text-transparent bg-clip-text bg-gradient-to-r from-purple-700 via-pink-500 to-yellow-400 drop-shadow">
-        Welcome to Your <span class="underline decoration-pink-400">Personal Trading Journal</span>
+      <h1 class="text-4xl font-[Coolvetica] mb-4 text-white drop-shadow">
+
+        Welcome to Your <span class="text-[#3dff90]">Personal Trading Journal</span>
       </h1>
-      <p class="text-lg text-gray-700 mb-8 max-w-2xl mx-auto">
-        Track, analyze, and improve your trading performance with <span class="font-bold text-purple-700">Cryptocal</span>.
+      <p class="text-lg text-white mb-8 max-w-2xl mx-auto">
+        Track, analyze, and improve your trading performance with <span class="font-bold text-[#3dff90]">Cryptocal</span>.
         Securely log your trades, visualize your progress, and stay updated with the latest crypto prices and news.
       </p>
+
       <!-- What you can do -->
       <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-        <div class="bg-white/80 rounded-xl shadow p-4 flex flex-col items-center">
-          <span class="text-purple-700 font-bold text-lg mb-1">Analyse</span>
-          <span class="text-xs text-gray-600 text-center">Deeply analyze your trading data and performance.</span>
+        <div class="bg-black border border-[#3dff90] rounded-xl shadow p-4 flex flex-col items-center">
+          <span class="text-white font-bold text-lg mb-1">Analyse</span>
+          <span class="text-xs text-white text-center">Deeply analyze your trading data and performance.</span>
         </div>
-        <div class="bg-white/80 rounded-xl shadow p-4 flex flex-col items-center">
-          <span class="text-pink-600 font-bold text-lg mb-1">Report</span>
-          <span class="text-xs text-gray-600 text-center">Generate detailed reports for your trades and strategies.</span>
+        <div class="bg-black border border-[#3dff90] rounded-xl shadow p-4 flex flex-col items-center">
+          <span class="text-white font-bold text-lg mb-1">Report</span>
+          <span class="text-xs text-white text-center">Generate detailed reports for your trades and strategies.</span>
         </div>
-        <div class="bg-white/80 rounded-xl shadow p-4 flex flex-col items-center">
-          <span class="text-yellow-600 font-bold text-lg mb-1">Extract</span>
-          <span class="text-xs text-gray-600 text-center">Export and extract your trading data for further use.</span>
+        <div class="bg-black border border-[#3dff90] rounded-xl shadow p-4 flex flex-col items-center">
+          <span class="text-white font-bold text-lg mb-1">Extract</span>
+          <span class="text-xs text-white text-center">Export and extract your trading data for further use.</span>
         </div>
-        <div class="bg-white/80 rounded-xl shadow p-4 flex flex-col items-center">
-          <span class="text-green-600 font-bold text-lg mb-1">Compare</span>
-          <span class="text-xs text-gray-600 text-center">Compare your results across time, assets, or strategies.</span>
+        <div class="bg-black border border-[#3dff90] rounded-xl shadow p-4 flex flex-col items-center">
+          <span class="text-white font-bold text-lg mb-1">Compare</span>
+          <span class="text-xs text-white text-center">Compare your results across time, assets, or strategies.</span>
         </div>
-        <div class="bg-white/80 rounded-xl shadow p-4 flex flex-col items-center">
-          <span class="text-blue-600 font-bold text-lg mb-1">Connect</span>
-          <span class="text-xs text-gray-600 text-center">Connect with other traders and share insights.</span>
+        <div class="bg-black border border-[#3dff90] rounded-xl shadow p-4 flex flex-col items-center">
+          <span class="text-white font-bold text-lg mb-1">Connect</span>
+          <span class="text-xs text-white text-center">Connect with other traders and share insights.</span>
         </div>
       </div>
+
+
+
     </div>
     <!-- Crypto Prices Bar -->
     <div class="w-full max-w-3xl mx-auto mb-10">
@@ -122,7 +203,8 @@
     </div>
     <!-- News Section -->
     <section class="w-full max-w-4xl mx-auto mb-12">
-      <h2 class="text-2xl font-bold mb-4 text-purple-700 text-left">Latest Crypto News</h2>
+      <h2 class="text-2xl font-bold mb-4 text-[#3dff90] text-left">Latest Crypto News</h2>
+
       <div id="cryptoNews" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
     </section>
   </main>
