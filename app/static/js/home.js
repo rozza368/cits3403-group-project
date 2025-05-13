@@ -188,7 +188,7 @@ window.addEventListener('storage', () => {
     updateCharts();
 });
 
-// Optionally refresh crypto prices every 10 minutes 
+// Optionally refresh crypto prices every 10 minutes
 setInterval(fetchCryptoPrices, 600000); // 10 minutes
 
 // Display list of users upon clicking on search bar
@@ -232,4 +232,143 @@ document.addEventListener('click', function(e) {
     if (!searchBar.contains(e.target)) {
         dropdown.classList.add('hidden');
     }
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+// --- Chart.js Graphs: Improved Styles ---
+// Website View Chart
+if (window.websiteViewChart) window.websiteViewChart.destroy();
+fetch('/api/entry')
+    .then(res => res.json())
+    .then(data => {
+    const ctx = document.getElementById('websiteViewChart').getContext('2d');
+    window.websiteViewChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+        labels: data.labels || ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        datasets: [{
+            label: 'Views',
+            data: data.views || [120, 190, 300, 500, 200, 300, 400],
+            borderColor: '#3b82f6',
+            backgroundColor: ctx.createLinearGradient(0, 0, 0, 200),
+            pointBackgroundColor: '#fff',
+            pointBorderColor: '#3b82f6',
+            pointRadius: 5,
+            fill: true,
+            tension: 0.4
+        }]
+        },
+        options: {
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+            backgroundColor: '#3b82f6',
+            titleColor: '#fff',
+            bodyColor: '#fff',
+            borderColor: '#fff',
+            borderWidth: 1
+            }
+        },
+        scales: {
+            x: { grid: { display: false }, ticks: { color: '#64748b' } },
+            y: { grid: { color: '#e0e7ef' }, ticks: { color: '#64748b' }, beginAtZero: true }
+        }
+        }
+    });
+    });
+
+// Daily Sales Chart
+if (window.dailySalesChart) window.dailySalesChart.destroy();
+fetch('/api/profits')
+    .then(res => res.json())
+    .then(data => {
+    const ctx = document.getElementById('dailySalesChart').getContext('2d');
+    window.dailySalesChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+        labels: data.labels || ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        datasets: [{
+            label: 'Sales',
+            data: data.sales || [12, 19, 3, 5, 2, 3, 7],
+            backgroundColor: [
+            '#34d399', '#60a5fa', '#818cf8', '#fbbf24', '#f87171', '#38bdf8', '#a78bfa'
+            ],
+            borderRadius: 8,
+            barPercentage: 0.6
+        }]
+        },
+        options: {
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+            backgroundColor: '#10b981',
+            titleColor: '#fff',
+            bodyColor: '#fff',
+            borderColor: '#fff',
+            borderWidth: 1
+            }
+        },
+        scales: {
+            x: { grid: { display: false }, ticks: { color: '#64748b' } },
+            y: { grid: { color: '#e0e7ef' }, ticks: { color: '#64748b' }, beginAtZero: true }
+        }
+        }
+    });
+    });
+
+// Completed Tasks Chart
+if (window.completedTasksChart) window.completedTasksChart.destroy();
+fetch('/api/entry')
+    .then(res => res.json())
+    .then(data => {
+    const ctx = document.getElementById('completedTasksChart').getContext('2d');
+    window.completedTasksChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+        labels: ['Completed', 'Pending'],
+        datasets: [{
+            data: data.completed || [75, 25],
+            backgroundColor: ['#a78bfa', '#e0e7ef'],
+            borderWidth: 2,
+            borderColor: '#fff'
+        }]
+        },
+        options: {
+        plugins: {
+            legend: {
+            display: true,
+            position: 'bottom',
+            labels: { color: '#64748b', font: { weight: 'bold' } }
+            },
+            tooltip: {
+            backgroundColor: '#a78bfa',
+            titleColor: '#fff',
+            bodyColor: '#fff',
+            borderColor: '#fff',
+            borderWidth: 1
+            }
+        },
+        cutout: '70%'
+        }
+    });
+    });
+
+// Fetch crypto prices and update the table
+async function fetchCryptoPricesTable() {
+    try {
+    const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,binancecoin,cardano,dogecoin&vs_currencies=usd');
+    if (!res.ok) throw new Error('Price fetch failed');
+    const data = await res.json();
+    document.getElementById('btc-price').textContent = `$${Number(data.bitcoin.usd).toLocaleString()}`;
+    document.getElementById('eth-price').textContent = `$${Number(data.ethereum.usd).toLocaleString()}`;
+    document.getElementById('sol-price').textContent = `$${Number(data.solana.usd).toLocaleString()}`;
+    document.getElementById('bnb-price').textContent = `$${Number(data.binancecoin.usd).toLocaleString()}`;
+    document.getElementById('ada-price').textContent = `$${Number(data.cardano.usd).toLocaleString()}`;
+    document.getElementById('doge-price').textContent = `$${Number(data.dogecoin.usd).toLocaleString()}`;
+    } catch (e) {
+    document.getElementById('cryptoPricesTable').innerHTML = '<div class="text-red-500 text-center">Unable to load prices at this time.</div>';
+    }
+}
+fetchCryptoPricesTable();
+setInterval(fetchCryptoPricesTable, 60000);
 });
