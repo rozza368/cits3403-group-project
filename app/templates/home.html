@@ -6,59 +6,81 @@
   <title>Cryptocal Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* Decorative background shapes to match login page */
+    .bg-shape1 {
+      position: absolute;
+      top: -60px;
+      left: -60px;
+      width: 320px;
+      height: 320px;
+      background: linear-gradient(135deg, #60a5fa 0%, #cbd5e1 100%);
+      border-radius: 60% 40% 60% 40%;
+      opacity: 0.7;
+      z-index: 0;
+      filter: blur(2px);
+    }
+    .bg-shape2 {
+      position: absolute;
+      top: 80px;
+      right: -80px;
+      width: 260px;
+      height: 260px;
+      background: linear-gradient(135deg, #bae6fd 0%, #cbd5e1 100%);
+      border-radius: 40% 60% 40% 60%;
+      opacity: 0.6;
+      z-index: 0;
+      filter: blur(2px);
+    }
+    .bg-shape3 {
+      position: absolute;
+      bottom: -80px;
+      left: 40%;
+      width: 400px;
+      height: 180px;
+      background: linear-gradient(90deg, #60a5fa 0%, #f1f5f9 100%);
+      border-radius: 50% 50% 60% 40%;
+      opacity: 0.5;
+      z-index: 0;
+      filter: blur(2px);
+    }
+  </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex flex-col">
-  <!-- Top Navigation -->
-  <header class="w-full bg-white shadow px-6 py-4 flex items-center justify-between">
-    <div class="flex items-center space-x-2">
-      <span class="text-gray-400">Dashboard</span>
-      <span class="mx-1">/</span>
-      <span class="font-semibold text-gray-700">Home</span>
-    </div>
-    <div class="flex-1 flex justify-center relative">
-      <input type="text" placeholder="Search" id="search-bar-top" class="w-80 px-4 py-2 border rounded focus:outline-none focus:border-blue-400 text-sm bg-gray-50"/>
-      <div id="search-dropdown" class="hidden absolute top-full left-1/2 transform -translate-x-1/2 w-80 mt-1 bg-white border rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
+<body class="relative min-h-screen bg-gradient-to-br from-[#e0e7ff] via-[#f1f5f9] to-[#cbd5e1] flex flex-col overflow-x-hidden">
+  <!-- Decorative Background Shapes -->
+  <div class="bg-shape1"></div>
+  <div class="bg-shape2"></div>
+  <div class="bg-shape3"></div>
+  <!-- Centralized Task Bar with improved logo on the left -->
+  <header class="relative z-10 w-full flex items-center justify-between px-8 py-6">
+    <!-- Logo Left -->
+    <div class="flex items-center space-x-3">
+      <div class="bg-gradient-to-tr from-blue-600 via-blue-400 to-blue-200 rounded-full p-2 shadow-lg">
+        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2.2"/>
+          <path d="M8 12h8M12 8v8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
       </div>
+      <span class="text-3xl font-extrabold bg-gradient-to-r from-blue-700 via-blue-400 to-gray-400 bg-clip-text text-transparent tracking-tight drop-shadow">
+        Cryptocal
+      </span>
     </div>
-    <div class="flex items-center space-x-4">
-      <a href="/" class="text-gray-500 hover:text-blue-600" title="Home">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path d="M3 12l2-2m0 0l7-7 7 7m-9 2v6m0 0h6m-6 0v6m6-6v6m0 0h6m-6 0v6" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </a>
-      <a href="/index" class="text-gray-500 hover:text-blue-600" title="Calendar">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <rect x="3" y="4" width="18" height="18" rx="2" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M16 2v4M8 2v4M3 10h18" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </a>
-      <button class="text-gray-500 hover:text-blue-600" title="Menu">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <circle cx="12" cy="12" r="1.5"/>
-          <circle cx="19.5" cy="12" r="1.5"/>
-          <circle cx="4.5" cy="12" r="1.5"/>
-        </svg>
-      </button>
-      <button class="text-gray-500 hover:text-blue-600" title="Notifications">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </button>
+    <!-- Centered Nav -->
+    <nav class="flex items-center space-x-8 bg-white/80 rounded-full px-8 py-3 shadow-lg backdrop-blur-md mx-auto">
+      <a href="/" class="ml-2 text-blue-700 font-bold hover:underline text-lg">Home</a>
+      <a href="/index" class="ml-2 text-blue-700 font-bold hover:underline text-lg">Calendar</a>
       <form method="POST" action="{{ url_for('logout') }}" class="inline">
-        <button type="submit" class="text-gray-500 hover:text-blue-600" title="Profile">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <circle cx="12" cy="7" r="4" />
-            <path d="M5.5 21a8.38 8.38 0 0113 0" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-        </button>
+        <button type="submit" class="ml-2 text-blue-700 font-bold hover:underline text-lg">Logout</button>
       </form>
-    </div>
+    </nav>
+    <!-- Spacer for alignment -->
+    <div class="w-32"></div>
   </header>
   <!-- Dashboard Content -->
   <main class="flex-1 w-full max-w-7xl mx-auto px-4 py-8">
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
       <!-- Card 1: Today's Money -->
-      <div class="bg-white rounded-lg shadow p-5 flex flex-col">
+      <div class="bg-white/80 rounded-lg shadow p-5 flex flex-col">
         <div class="flex items-center space-x-3">
           <div class="bg-gray-800 text-white rounded-full p-2">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -74,7 +96,7 @@
         <span id="todayMoneyChange" class="text-green-600 text-sm mt-2">+0% vs last week</span>
       </div>
       <!-- Card 2: Total Earnings This Month -->
-      <div class="bg-white rounded-lg shadow p-5 flex flex-col">
+      <div class="bg-white/80 rounded-lg shadow p-5 flex flex-col">
         <div class="flex items-center space-x-3">
           <div class="bg-gray-800 text-white rounded-full p-2">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -89,9 +111,10 @@
         <span id="totalEarningsChange" class="text-gray-500 text-sm mt-2"></span>
       </div>
       <!-- Live Crypto Prices -->
-      <div class="bg-white rounded-lg shadow p-5 flex flex-col min-h-[180px]">
+      <div class="bg-white/80 rounded-lg shadow p-5 flex flex-col min-h-[180px]">
         <div class="flex items-center space-x-3 mb-2">
-          <div class="bg-yellow-400 text-white rounded-full p-2">
+          <div class="bg-blue-400 text-white rounded-full p-2">
+            <!-- Blue clock icon -->
             <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <circle cx="12" cy="12" r="10" stroke-linecap="round" stroke-linejoin="round"/>
               <path d="M12 8v4l3 2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -102,65 +125,249 @@
             <span class="text-sm text-gray-400">Top Coins</span>
           </div>
         </div>
-        <div id="cryptoPrices" class="flex flex-col gap-2 mt-2 text-sm"></div>
+        <div id="cryptoPricesTable" class="mt-2">
+          <div class="flex flex-col gap-1">
+            <div class="flex justify-between items-center py-1">
+              <span class="font-semibold text-gray-700">Bitcoin</span>
+              <span id="btc-price" class="text-blue-600 font-semibold">$--</span>
+            </div>
+            <div class="flex justify-between items-center py-1">
+              <span class="font-semibold text-gray-700">Ethereum</span>
+              <span id="eth-price" class="text-blue-600 font-semibold">$--</span>
+            </div>
+            <div class="flex justify-between items-center py-1">
+              <span class="font-semibold text-gray-700">Solana</span>
+              <span id="sol-price" class="text-blue-600 font-semibold">$--</span>
+            </div>
+            <div class="flex justify-between items-center py-1">
+              <span class="font-semibold text-gray-700">BNB</span>
+              <span id="bnb-price" class="text-blue-600 font-semibold">$--</span>
+            </div>
+            <div class="flex justify-between items-center py-1">
+              <span class="font-semibold text-gray-700">Cardano</span>
+              <span id="ada-price" class="text-blue-600 font-semibold">$--</span>
+            </div>
+            <div class="flex justify-between items-center py-1">
+              <span class="font-semibold text-gray-700">Dogecoin</span>
+              <span id="doge-price" class="text-blue-600 font-semibold">$--</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <!-- Charts -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
       <!-- Website View -->
-      <div class="bg-white rounded-lg shadow p-5 flex flex-col">
-        <div class="flex flex-col h-full">
-          <canvas id="websiteViewChart" height="120"></canvas>
-          <div class="mt-4">
-            <div class="font-semibold">Website View</div>
-            <div class="text-gray-500 text-sm">Last Campaign Performance</div>
-            <div class="text-gray-400 text-xs mt-2 flex items-center">
-              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path d="M17 16l4-4m0 0l-4-4m4 4H7" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-              campaign sent 2 days ago
-            </div>
+      <div class="bg-white/90 rounded-2xl shadow-lg p-6 flex flex-col hover:shadow-xl transition-shadow duration-300">
+        <div class="flex items-center mb-4">
+          <div class="bg-blue-100 text-blue-700 rounded-full p-2 mr-3">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M3 17v-2a4 4 0 014-4h10a4 4 0 014 4v2" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="12" cy="7" r="4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
           </div>
+          <div>
+            <div class="font-bold text-lg text-blue-700">Website View</div>
+            <div class="text-gray-400 text-xs">Last Campaign Performance</div>
+          </div>
+        </div>
+        <canvas id="websiteViewChart" height="120"></canvas>
+        <div class="flex items-center mt-4 text-xs text-gray-400">
+          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M17 16l4-4m0 0l-4-4m4 4H7" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          campaign sent 2 days ago
         </div>
       </div>
       <!-- Daily Sales -->
-      <div class="bg-white rounded-lg shadow p-5 flex flex-col">
-        <div class="flex flex-col h-full">
-          <canvas id="dailySalesChart" height="120"></canvas>
-          <div class="mt-4">
-            <div class="font-semibold">Daily Sales</div>
-            <div class="text-gray-500 text-sm">15% increase in today sales</div>
-            <div class="text-gray-400 text-xs mt-2 flex items-center">
-              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M12 6v6l4 2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-              updated 4 min ago
-            </div>
+      <div class="bg-white/90 rounded-2xl shadow-lg p-6 flex flex-col hover:shadow-xl transition-shadow duration-300">
+        <div class="flex items-center mb-4">
+          <div class="bg-green-100 text-green-700 rounded-full p-2 mr-3">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <rect x="3" y="4" width="18" height="18" rx="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M16 2v4M8 2v4M3 10h18" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
           </div>
+          <div>
+            <div class="font-bold text-lg text-green-700">Daily Sales</div>
+            <div class="text-gray-400 text-xs">15% increase in today sales</div>
+          </div>
+        </div>
+        <canvas id="dailySalesChart" height="120"></canvas>
+        <div class="flex items-center mt-4 text-xs text-gray-400">
+          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 6v6l4 2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          updated 4 min ago
         </div>
       </div>
     </div>
     <!-- Completed Tasks -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div class="bg-white rounded-lg shadow p-5 flex flex-col">
-        <div class="flex flex-col h-full">
-          <canvas id="completedTasksChart" height="120"></canvas>
-          <div class="mt-4">
-            <div class="font-semibold">Completed Tasks</div>
-            <div class="text-gray-500 text-sm">Last Campaign Performance</div>
+      <div class="bg-white/90 rounded-2xl shadow-lg p-6 flex flex-col hover:shadow-xl transition-shadow duration-300">
+        <div class="flex items-center mb-4">
+          <div class="bg-purple-100 text-purple-700 rounded-full p-2 mr-3">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <div class="font-bold text-lg text-purple-700">Completed Tasks</div>
+            <div class="text-gray-400 text-xs">Last Campaign Performance</div>
           </div>
         </div>
+        <canvas id="completedTasksChart" height="120"></canvas>
       </div>
       <div></div>
     </div>
   </main>
   <!-- Floating Settings Button -->
-  <button class="fixed bottom-6 right-6 bg-white shadow-lg rounded-full p-3 hover:bg-gray-100">
+  <button class="fixed bottom-6 right-6 bg-white/80 shadow-lg rounded-full p-3 hover:bg-gray-100">
     <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
       <path d="M12 15.5A3.5 3.5 0 1112 8.5a3.5 3.5 0 010 7zm7.94-2.06a1 1 0 00.26-1.09l-1.1-3.18a1 1 0 00-.76-.67l-3.45-.5a1 1 0 00-.89.27l-2.45 2.45a1 1 0 00-.27.89l.5 3.45a1 1 0 00.67.76l3.18 1.1a1 1 0 001.09-.26l2.45-2.45a1 1 0 00.27-.89z" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
   </button>
   <script src="{{ url_for('static', filename='js/home.js') }}"></script>
+  <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // --- Chart.js Graphs: Improved Styles ---
+    // Website View Chart
+    if (window.websiteViewChart) window.websiteViewChart.destroy();
+    fetch('/api/entry')
+      .then(res => res.json())
+      .then(data => {
+        const ctx = document.getElementById('websiteViewChart').getContext('2d');
+        window.websiteViewChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: data.labels || ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            datasets: [{
+              label: 'Views',
+              data: data.views || [120, 190, 300, 500, 200, 300, 400],
+              borderColor: '#3b82f6',
+              backgroundColor: ctx.createLinearGradient(0, 0, 0, 200),
+              pointBackgroundColor: '#fff',
+              pointBorderColor: '#3b82f6',
+              pointRadius: 5,
+              fill: true,
+              tension: 0.4
+            }]
+          },
+          options: {
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                backgroundColor: '#3b82f6',
+                titleColor: '#fff',
+                bodyColor: '#fff',
+                borderColor: '#fff',
+                borderWidth: 1
+              }
+            },
+            scales: {
+              x: { grid: { display: false }, ticks: { color: '#64748b' } },
+              y: { grid: { color: '#e0e7ef' }, ticks: { color: '#64748b' }, beginAtZero: true }
+            }
+          }
+        });
+      });
+
+    // Daily Sales Chart
+    if (window.dailySalesChart) window.dailySalesChart.destroy();
+    fetch('/api/profits')
+      .then(res => res.json())
+      .then(data => {
+        const ctx = document.getElementById('dailySalesChart').getContext('2d');
+        window.dailySalesChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: data.labels || ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            datasets: [{
+              label: 'Sales',
+              data: data.sales || [12, 19, 3, 5, 2, 3, 7],
+              backgroundColor: [
+                '#34d399', '#60a5fa', '#818cf8', '#fbbf24', '#f87171', '#38bdf8', '#a78bfa'
+              ],
+              borderRadius: 8,
+              barPercentage: 0.6
+            }]
+          },
+          options: {
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                backgroundColor: '#10b981',
+                titleColor: '#fff',
+                bodyColor: '#fff',
+                borderColor: '#fff',
+                borderWidth: 1
+              }
+            },
+            scales: {
+              x: { grid: { display: false }, ticks: { color: '#64748b' } },
+              y: { grid: { color: '#e0e7ef' }, ticks: { color: '#64748b' }, beginAtZero: true }
+            }
+          }
+        });
+      });
+
+    // Completed Tasks Chart
+    if (window.completedTasksChart) window.completedTasksChart.destroy();
+    fetch('/api/entry')
+      .then(res => res.json())
+      .then(data => {
+        const ctx = document.getElementById('completedTasksChart').getContext('2d');
+        window.completedTasksChart = new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+            labels: ['Completed', 'Pending'],
+            datasets: [{
+              data: data.completed || [75, 25],
+              backgroundColor: ['#a78bfa', '#e0e7ef'],
+              borderWidth: 2,
+              borderColor: '#fff'
+            }]
+          },
+          options: {
+            plugins: {
+              legend: {
+                display: true,
+                position: 'bottom',
+                labels: { color: '#64748b', font: { weight: 'bold' } }
+              },
+              tooltip: {
+                backgroundColor: '#a78bfa',
+                titleColor: '#fff',
+                bodyColor: '#fff',
+                borderColor: '#fff',
+                borderWidth: 1
+              }
+            },
+            cutout: '70%'
+          }
+        });
+      });
+
+    // Fetch crypto prices and update the table
+    async function fetchCryptoPricesTable() {
+      try {
+        const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,binancecoin,cardano,dogecoin&vs_currencies=usd');
+        if (!res.ok) throw new Error('Price fetch failed');
+        const data = await res.json();
+        document.getElementById('btc-price').textContent = `$${Number(data.bitcoin.usd).toLocaleString()}`;
+        document.getElementById('eth-price').textContent = `$${Number(data.ethereum.usd).toLocaleString()}`;
+        document.getElementById('sol-price').textContent = `$${Number(data.solana.usd).toLocaleString()}`;
+        document.getElementById('bnb-price').textContent = `$${Number(data.binancecoin.usd).toLocaleString()}`;
+        document.getElementById('ada-price').textContent = `$${Number(data.cardano.usd).toLocaleString()}`;
+        document.getElementById('doge-price').textContent = `$${Number(data.dogecoin.usd).toLocaleString()}`;
+      } catch (e) {
+        document.getElementById('cryptoPricesTable').innerHTML = '<div class="text-red-500 text-center">Unable to load prices at this time.</div>';
+      }
+    }
+    fetchCryptoPricesTable();
+    setInterval(fetchCryptoPricesTable, 60000);
+  });
+</script>
 </body>
 </html>

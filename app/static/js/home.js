@@ -149,27 +149,31 @@ async function updateCharts() {
 
 // --- Crypto Prices API ---
 async function fetchCryptoPrices() {
-    const coins = ['bitcoin', 'ethereum', 'solana', 'dogecoin', 'binancecoin'];
+    const coins = [
+        { id: 'bitcoin', label: 'btc-price' },
+        { id: 'ethereum', label: 'eth-price' },
+        { id: 'solana', label: 'sol-price' },
+        { id: 'binancecoin', label: 'bnb-price' },
+        { id: 'cardano', label: 'ada-price' },
+        { id: 'dogecoin', label: 'doge-price' }
+    ];
     const vs_currency = 'usd';
     try {
-        const resp = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${coins.join(',')}&vs_currencies=${vs_currency}`);
+        const resp = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${coins.map(c => c.id).join(',')}&vs_currencies=${vs_currency}`);
         const data = await resp.json();
-        const cryptoPricesDiv = document.getElementById('cryptoPrices');
-        cryptoPricesDiv.innerHTML = '';
         coins.forEach(coin => {
-            const price = data[coin]?.usd;
-            if (price !== undefined) {
-                const name = coin.charAt(0).toUpperCase() + coin.slice(1);
-                cryptoPricesDiv.innerHTML += `
-                    <div class="flex justify-between items-center">
-                    <span class="font-semibold">${name}</span>
-                    <span class="text-blue-600 font-mono">$${price.toLocaleString()}</span>
-                    </div>
-                `;
+            const price = data[coin.id]?.usd;
+            const el = document.getElementById(coin.label);
+            if (el) {
+                el.textContent = price !== undefined ? `$${price.toLocaleString()}` : '$--';
             }
         });
     } catch (e) {
-        document.getElementById('cryptoPrices').innerHTML = '<span class="text-red-500">Failed to load prices.</span>';
+        // Show error in all price fields
+        coins.forEach(coin => {
+            const el = document.getElementById(coin.label);
+            if (el) el.textContent = 'Error';
+        });
     }
 }
 
@@ -184,8 +188,8 @@ window.addEventListener('storage', () => {
     updateCharts();
 });
 
-// Optionally refresh crypto prices every 60 seconds
-setInterval(fetchCryptoPrices, 60000);
+// Optionally refresh crypto prices every 10 minutes 
+setInterval(fetchCryptoPrices, 600000); // 10 minutes
 
 // Display list of users upon clicking on search bar
 document.getElementById('search-bar-top').addEventListener('focus', async function() {
