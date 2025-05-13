@@ -17,9 +17,9 @@ const monthNames = [
     "July", "August", "September", "October", "November", "December"
 ];
 
-async function fetchProfits() {
+async function fetchProfits(year, month) {
     try {
-        const response = await fetch('/api/profits');
+        const response = await fetch(`/api/profits?year=${year}&month=${month}`);
         if (!response.ok) {
             console.error('Failed to fetch profits:', response.statusText);
             return { month_profits: [], last_week_profits: [] };
@@ -63,7 +63,7 @@ async function renderCalendar(date) {
     let nextDay = 1;
 
     // Fetch profits for the current month
-    const { month_profits } = await fetchProfits();
+    const { month_profits } = await fetchProfits(year, month + 1);
 
     while (day <= lastDate || weekDayIndex % 7 !== 0) {
         if (weekDayIndex % 7 === 0) {
@@ -82,7 +82,7 @@ async function renderCalendar(date) {
 
         if (isBeforeFirst) {
             const prevDay = prevMonthLastDate - (firstDay - weekDayIndex - 1);
-            const savedProfit = month_profits.find(p => p.day === prevDay)?.profit || 0;
+            const savedProfit = (await fetchProfits(prevMonthYear, prevMonth + 1)).month_profits.find(p => p.day === prevDay)?.profit || 0;
 
             box.className = "border rounded-lg p-2 h-20 flex flex-col justify-start items-start relative bg-gray-100 text-gray-400 cursor-not-allowed";
             box.innerHTML = `
@@ -126,7 +126,7 @@ async function renderCalendar(date) {
 
             day++;
         } else {
-            const savedProfit = month_profits.find(p => p.day === nextDay)?.profit || 0;
+            const savedProfit = (await fetchProfits(nextMonthYear, nextMonth + 1)).month_profits.find(p => p.day === nextDay)?.profit || 0;
 
             box.className = "border rounded-lg p-2 h-20 flex flex-col justify-start items-start relative bg-gray-100 text-gray-400 cursor-not-allowed";
             box.innerHTML = `

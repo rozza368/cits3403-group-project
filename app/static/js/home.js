@@ -1,7 +1,7 @@
 // Fetch profits from the backend
-async function fetchProfits() {
+async function fetchProfits(year = new Date().getFullYear(), month = new Date().getMonth() + 1) {
     try {
-        const response = await fetch('/api/profits');
+        const response = await fetch(`/api/profits?year=${year}&month=${month}`);
         if (!response.ok) {
             console.error('Failed to fetch profits:', response.statusText);
             return { month_profits: [], last_week_profits: [] };
@@ -26,8 +26,10 @@ async function getLastWeekProfits() {
 
 // --- Update Dashboard Cards ---
 async function updateDashboard() {
-    const { month_profits } = await fetchProfits();
     const todayDate = new Date();
+    const year = todayDate.getFullYear();
+    const month = todayDate.getMonth() + 1;
+    const { month_profits } = await fetchProfits(year, month);
     const today = todayDate.getDate();
 
     // Today's profit
