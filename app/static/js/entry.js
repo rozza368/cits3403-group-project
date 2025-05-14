@@ -43,6 +43,11 @@ document.getElementById("dateHeading").textContent = `Enter Profit for ${day}/${
             carouselWrapper.classList.remove("hidden");
             updateImageCount();
         }
+
+        // Update the save button text if editing
+        if (data.profit || data.notes || (data.images && data.images.length > 0)) {
+            document.getElementById("saveBtn").textContent = "Update Entry";
+        }
     } catch (error) {
         console.error('Error fetching entry data:', error);
     }

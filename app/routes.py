@@ -51,8 +51,6 @@ def entry():
 
             # Check if a trade already exists for this date and user
             existing_trade = Trade.query.filter_by(user_id=session['user_id'], trade_date=trade_date).first()
-            if existing_trade:
-                return jsonify({'error': 'A trade already exists for this date!'}), 400
 
             # Handle image uploads
             image_files = request.files.getlist('images')
@@ -63,8 +61,18 @@ def entry():
                     image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                     image_filenames.append(filename)
 
-            new_trade = Trade(user_id=session['user_id'], trade_date=trade_date, profit=float(profit), comment=notes, image_path=','.join(image_filenames) if image_filenames else None)
-            db.session.add(new_trade)
+            if existing_trade:
+                # Update the existing trade
+                existing_trade.profit = float(profit)
+                existing_trade.comment = notes
+                if image_filenames:
+                    existing_trade.image_path = ','.join(image_filenames)
+                else:
+                    existing_trade.image_path = None
+            else:
+                # Create a new trade
+                new_trade = Trade(user_id=session['user_id'], trade_date=trade_date, profit=float(profit), comment=notes, image_path=','.join(image_filenames) if image_filenames else None)
+                db.session.add(new_trade)
             db.session.commit()
 
             return jsonify({'message': 'Entry saved successfully!'}), 200
