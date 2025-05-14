@@ -81,6 +81,37 @@ def entry():
 
     return render_template('entry.html')
 
+@app.route('/entry/delete', methods=['POST'])
+def delete_entry():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    try:
+        # Get the date from the request
+        data = request.json
+        date = data.get('date')
+
+        if not date:
+            return jsonify({'error': 'Date is required to delete an entry.'}), 400
+
+        # Parse the date
+        trade_date = datetime.strptime(date, '%Y-%m-%d').date()
+
+        # Find the entry for the user and date
+        trade = Trade.query.filter_by(user_id=session['user_id'], trade_date=trade_date).first()
+
+        if not trade:
+            return jsonify({'error': 'No entry found for the specified date.'}), 404
+
+        # Delete the entry
+        db.session.delete(trade)
+        db.session.commit()
+
+        return jsonify({'message': 'Entry deleted successfully.'}), 200
+    except Exception as e:
+        print("Error deleting entry:", e)
+        return jsonify({'error': 'An error occurred while deleting the entry.'}), 500
+
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':

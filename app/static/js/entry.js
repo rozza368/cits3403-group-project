@@ -18,6 +18,7 @@ const deleteBtn = document.getElementById("deleteBtn");
 const prevBtn = document.getElementById("prevBtn");
 const nextBtn = document.getElementById("nextBtn");
 const imageCountDisplay = document.getElementById("imageCount");
+const deleteEntryBtn = document.getElementById("deleteEntryBtn");
 
 let imageList = [];
 let currentImageIndex = 0;
@@ -47,11 +48,41 @@ document.getElementById("dateHeading").textContent = `Enter Profit for ${day}/${
         // Update the save button text if editing
         if (data.profit || data.notes || (data.images && data.images.length > 0)) {
             document.getElementById("saveBtn").textContent = "Update Entry";
+            deleteEntryBtn.classList.remove("hidden"); // Show the delete button
         }
     } catch (error) {
         console.error('Error fetching entry data:', error);
     }
 })();
+
+// Handle delete entry button click
+deleteEntryBtn.addEventListener("click", async () => {
+    const date = `${year}-${month}-${day}`; // Format: YYYY-MM-DD
+
+    if (!confirm("Are you sure you want to delete this entry? This action cannot be undone.")) {
+        return;
+    }
+
+    try {
+        const response = await fetch('/entry/delete', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ date }),
+        });
+
+        if (response.ok) {
+            window.location.href = `/index`;
+        } else {
+            const error = await response.json();
+            alert(error.error || 'Failed to delete entry.');
+        }
+    } catch (error) {
+        console.error('Error deleting entry:', error);
+        alert('An error occurred while deleting the entry.');
+    }
+});
 
 document.getElementById("saveBtn").addEventListener("click", async () => {
     const profit = profitInput.value || 0;
