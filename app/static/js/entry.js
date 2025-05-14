@@ -35,39 +35,43 @@ document.getElementById("dateHeading").textContent = `Enter Profit for ${day}/${
         const data = await response.json();
         profitInput.value = data.profit || 0;
         notesInput.value = data.notes || '';
+
+        // Populate the image list with URLs from the backend
+        if (data.images && data.images.length > 0) {
+            imageList = data.images;
+            showImage(0);
+            carouselWrapper.classList.remove("hidden");
+            updateImageCount();
+        }
     } catch (error) {
         console.error('Error fetching entry data:', error);
     }
 })();
-
-if (localStorage.getItem(imagesKey)) {
-    imageList = JSON.parse(localStorage.getItem(imagesKey));
-    if (imageList.length > 0) {
-        showImage(0);
-        carouselWrapper.classList.remove("hidden");
-        updateImageCount();
-    }
-}
 
 document.getElementById("saveBtn").addEventListener("click", async () => {
     const profit = profitInput.value || 0;
     const notes = notesInput.value || "";
     const date = `${year}-${month}-${day}`; // Format: YYYY-MM-DD
 
+    const formData = new FormData();
+    formData.append("date", date);
+    formData.append("profit", profit);
+    formData.append("notes", notes);
+
+    // Append images to the form data
+    for (const image of imageList) {
+        const blob = await fetch(image).then(res => res.blob());
+        formData.append("images", blob, `image-${Date.now()}.jpg`);
+    }
+
     try {
         const response = await fetch('/entry', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                date: date,
-                profit: parseFloat(profit),
-                notes: notes,
-            }),
+            body: formData,
         });
 
         if (response.ok) {
             const result = await response.json();
-            alert(result.message || 'Entry saved successfully!');
             window.location.href = `/index`;
         } else {
             const error = await response.json();
@@ -75,7 +79,7 @@ document.getElementById("saveBtn").addEventListener("click", async () => {
         }
     } catch (error) {
         console.error('Error saving entry:', error);
-        alert('An error occurred while saving the entry. Check entry.js');
+        alert('An error occurred while saving the entry.');
     }
 });
 
