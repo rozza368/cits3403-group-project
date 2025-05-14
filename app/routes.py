@@ -13,14 +13,14 @@ import os
 def home():
     if 'user_id' not in session:
         return redirect(url_for('login'))
-    
+
     return render_template('home.html')
 
 @app.route('/index')
 def index():
     if 'user_id' not in session:
         return redirect(url_for('login'))
-    
+
     return render_template('index.html')
 
 @app.route('/entry', methods=['GET', 'POST'])
@@ -218,7 +218,7 @@ def get_entry():
         }), 200
     except Exception as e:
         return jsonify({'error': 'An error occurred while fetching the entry.'}), 500
-    
+
 @app.route('/api/stats')
 def api_stats():
     user_count = User.query.count()
@@ -257,7 +257,7 @@ def api_cryptoprices():
     except Exception as e:
         print("Crypto prices error:", e)
         return jsonify({}), 500
-    
+
 @app.route('/api/profits', methods=['GET'])
 def get_profits():
     try:

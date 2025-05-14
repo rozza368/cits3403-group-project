@@ -188,10 +188,10 @@ window.addEventListener('storage', () => {
 setInterval(fetchCryptoPrices, 60000);
 
 // Display list of users upon clicking on search bar
-document.getElementById('search-bar-top').addEventListener('focus', async function() {
+document.getElementById('usernameSearch').addEventListener('focus', async function () {
     const userListResult = await fetchUserList();
     const userList = userListResult["users"];
-    const dropdown = document.getElementById('search-dropdown');
+    const dropdown = document.getElementById('username-search-dropdown');
 
     if (userList && userList.length > 0) {
         dropdown.innerHTML = userList.map(user => `
@@ -206,9 +206,9 @@ document.getElementById('search-bar-top').addEventListener('focus', async functi
 });
 
 // Filter dropdown menu based on search bar input
-document.getElementById('search-bar-top').addEventListener('input', function() {
+document.getElementById('usernameSearch').addEventListener('input', function () {
     const searchTerm = this.value.toLowerCase();
-    const dropdown = document.getElementById('search-dropdown');
+    const dropdown = document.getElementById('username-search-dropdown');
     const items = dropdown.querySelectorAll('.search-item');
 
     items.forEach(item => {
@@ -221,11 +221,72 @@ document.getElementById('search-bar-top').addEventListener('input', function() {
     });
 });
 
+// Insert clicked username into the input field
+document.getElementById('username-search-dropdown').addEventListener('click', function (e) {
+    const target = e.target.closest('.search-item');
+    if (target && target.textContent) {
+        document.getElementById('usernameSearch').value = target.textContent.trim();
+        this.classList.add('hidden');
+    }
+});
+
 // Close search bar dropdown when clicking outside
-document.addEventListener('click', function(e) {
-    const searchBar = document.getElementById('search-bar-top');
-    const dropdown = document.getElementById('search-dropdown');
+document.addEventListener('click', function (e) {
+    const searchBar = document.getElementById('usernameSearch');
+    const dropdown = document.getElementById('username-search-dropdown');
     if (!searchBar.contains(e.target)) {
         dropdown.classList.add('hidden');
+    }
+});
+
+// Sharing profits section
+const shareProfitBtn = document.getElementById('shareProfitBtn');
+const shareProfitDialog = document.getElementById('shareProfitDialog');
+const closeShareProfitDialog = document.getElementById('closeShareProfitDialog');
+const shareProfitForm = document.getElementById('shareProfitForm');
+const shareProfitMessage = document.getElementById('shareProfitMessage');
+
+shareProfitBtn.addEventListener('click', () => {
+    shareProfitDialog.classList.remove('hidden');
+    shareProfitMessage.textContent = '';
+    shareProfitForm.reset();
+});
+
+closeShareProfitDialog.addEventListener('click', () => {
+    shareProfitDialog.classList.add('hidden');
+});
+
+shareProfitDialog.addEventListener('click', (e) => {
+    if (e.target === shareProfitDialog) {
+        shareProfitDialog.classList.add('hidden');
+    }
+});
+
+shareProfitForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const profit = document.getElementById('profitInput').value;
+    const comment = document.getElementById('commentInput').value;
+    const username = document.getElementById('usernameSearch').value;
+
+    try {
+        const params = new URLSearchParams({
+            amount: parseInt(profit, 10),
+            date_range: comment,
+            // username
+        });
+        const response = await fetch(`/api/create_image?${params.toString()}`, {
+            method: 'GET'
+        });
+        if (response.ok) {
+            shareProfitMessage.textContent = 'Profit info shared successfully!';
+            shareProfitMessage.className = 'mt-3 text-green-600 text-sm';
+            setTimeout(() => shareProfitDialog.classList.add('hidden'), 1200);
+        } else {
+            shareProfitMessage.textContent = 'Failed to share profit info.';
+            shareProfitMessage.className = 'mt-3 text-red-600 text-sm';
+        }
+    } catch {
+        shareProfitMessage.textContent = 'Network error.';
+        shareProfitMessage.className = 'mt-3 text-red-600 text-sm';
     }
 });
