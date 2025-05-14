@@ -122,8 +122,10 @@ async function updateCharts() {
     });
 
     // Daily Sales: Line chart for each month
-    const monthLabels = month_profits.map(p => p.day);
-    const monthProfits = month_profits.map(p => p.profit);
+    // --- FIX: Sort by day ascending ---
+    const sortedMonthProfits = [...month_profits].sort((a, b) => a.day - b.day);
+    const monthLabels = sortedMonthProfits.map(p => p.day);
+    const monthProfits = sortedMonthProfits.map(p => p.profit);
     if (dailySalesChart) dailySalesChart.destroy();
     dailySalesChart = new Chart(document.getElementById('dailySalesChart').getContext('2d'), {
         type: 'line',
