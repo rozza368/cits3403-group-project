@@ -77,7 +77,7 @@ async function renderCalendar(date) {
 
         let box = document.createElement("div");
 
-        const isBeforeFirst = weekDayIndex < firstDay && day === 1;
+        const isBeforeFirst = weekDayIndex < firstDay;
         const isAfterLast = day > lastDate;
 
         if (isBeforeFirst) {
