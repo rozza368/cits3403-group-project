@@ -14,25 +14,45 @@ Users can track their emotions and evaluate whether they’ve followed their per
 
 Additionally, the app includes a feature that allows users to share their monthly profit status in the form of an image. This encourages a healthy level of competition among friends and networks, motivating users to perform better. The desire to outperform others can fuel self-improvement, pushing traders to sharpen their skills and continue learning in the process.
 
-# Setup
+(TODO: describe design and use of application)
 
-*These instructions are targeted towards Linux. On Windows, simply substitute `python3` for `py`.*
+## Group Members
 
-First, create a Python virtual environment and source it:
+| UWA ID   | Name           | Github Username |
+| -------- | -------------- | --------------- |
+| 23876554 | Rory Cusworth  | rozza368        |
+| 22879249 | Sina Shahrivar | Sina-Jeff       |
+| 23421575 | Jared Huynh    | Jarednhu        |
+| 23593643 | Michael Allen  | Michaelallen5   |
 
+## Setup
+
+**First, create a Python virtual environment and source it:**
+
+On Linux:
 ```bash
 python3 -m venv application-env
 source application-env/bin/activate
 ```
 
-Install required packages:
+On Windows:
+```bash
+py -m venv application-env
+.\application-env\Scripts\activate
+```
+
+**Then, install required packages:**
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Run the server:
+**Run the server:**
 
 ```bash
-python3 main.py
+flask --app main.py run
 ```
+
+## Running Tests
+
+(TODO...)
