@@ -1,0 +1,37 @@
+/* Custom background shapes */
+.bg-shape1 {
+    position: absolute;
+    top: -60px;
+    left: -60px;
+    width: 320px;
+    height: 320px;
+    background: linear-gradient(135deg, #60a5fa 0%, #cbd5e1 100%); /* blue to light grey */
+    border-radius: 60% 40% 60% 40%;
+    opacity: 0.7;
+    z-index: 0;
+    filter: blur(2px);
+}
+.bg-shape2 {
+    position: absolute;
+    top: 80px;
+    right: -80px;
+    width: 260px;
+    height: 260px;
+    background: linear-gradient(135deg, #bae6fd 0%, #cbd5e1 100%); /* light blue to light grey */
+    border-radius: 40% 60% 40% 60%;
+    opacity: 0.6;
+    z-index: 0;
+    filter: blur(2px);
+}
+.bg-shape3 {
+    position: absolute;
+    bottom: -80px;
+    left: 40%;
+    width: 400px;
+    height: 180px;
+    background: linear-gradient(90deg, #60a5fa 0%, #f1f5f9 100%); /* blue to very light grey */
+    border-radius: 50% 50% 60% 40%;
+    opacity: 0.5;
+    z-index: 0;
+    filter: blur(2px);
+}

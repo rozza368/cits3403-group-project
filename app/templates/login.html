@@ -5,62 +5,150 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Login | Cryptocal</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet" />
   <style>
-    /* Custom background shapes */
-    .bg-shape1 {
-      position: absolute;
-      top: -60px;
-      left: -60px;
-      width: 320px;
-      height: 320px;
-      background: linear-gradient(135deg, #a78bfa 0%, #f472b6 100%);
-      border-radius: 60% 40% 60% 40%;
-      opacity: 0.7;
-      z-index: 0;
-      filter: blur(2px);
+    @font-face {
+      font-family: 'Coolvetica';
+      src: url("{{ url_for('static', filename='fonts/Coolvetica Rg.otf') }}") format('opentype');
+      font-weight: normal;
+      font-style: normal;
     }
-    .bg-shape2 {
+
+    /* Floating Green Particles */
+    .particle-wrapper {
       position: absolute;
-      top: 80px;
-      right: -80px;
-      width: 260px;
-      height: 260px;
-      background: linear-gradient(135deg, #fef08a 0%, #f472b6 100%);
-      border-radius: 40% 60% 40% 60%;
-      opacity: 0.6;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
       z-index: 0;
-      filter: blur(2px);
     }
-    .bg-shape3 {
+
+    .particle {
       position: absolute;
-      bottom: -80px;
-      left: 40%;
-      width: 400px;
-      height: 180px;
-      background: linear-gradient(90deg, #f472b6 0%, #a7f3d0 100%);
-      border-radius: 50% 50% 60% 40%;
-      opacity: 0.5;
-      z-index: 0;
-      filter: blur(2px);
+      width: 6px;
+      height: 6px;
+      background-color: #3dff90;
+      border-radius: 50%;
+      opacity: 0;
+      animation: floatUp 15s linear infinite;
+      animation-fill-mode: both;
     }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) translateX(0);
+        opacity: 0;
+      }
+      10% {
+        opacity: 0.6;
+      }
+      50% {
+        transform: translateY(-100vh) translateX(20px);
+        opacity: 0.3;
+      }
+      100% {
+        transform: translateY(-200vh) translateX(-20px);
+        opacity: 0;
+      }
+    }
+
+    /* Green Glow Hover Effect for Sign Up Button */
+    .btn-glow {
+      background-color: #3dff90;
+      color: black;
+      border-radius: 9999px;
+      padding: 0.5rem 1.25rem;
+      font-weight: 600;
+      border: 2px solid transparent;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .btn-glow:hover {
+      border-color: #3dff90;
+      box-shadow: 0 0 20px #3dff90;
+      transform: scale(1.05);
+    }
+
+
+    .shine-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(120deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0) 100%);
+      transform: translateX(-100%) rotate(25deg);
+      pointer-events: none;
+    }
+
+    .shine-card.animate-shine::before {
+      animation: shineEffect 1s ease forwards;
+    }
+
+    @keyframes shineEffect {
+      0% {
+        transform: translateX(-100%) rotate(25deg);
+      }
+      100% {
+        transform: translateX(100%) rotate(25deg);
+      }
+    }
+
   </style>
 </head>
-<body class="relative min-h-screen bg-gradient-to-br from-[#e0e7ff] via-[#fdf6e3] to-[#f7fbe8] flex flex-col overflow-x-hidden">
+<body class="relative min-h-screen bg-cover bg-center flex flex-col overflow-x-hidden" style="background-image: url('{{ url_for('static', filename='images/background.png') }}');">
+  <!-- Floating Particles -->
+  <div class="particle-wrapper">
+    <div class="particle" style="top: 105%; left: 5%; animation-duration: 14s; animation-delay: 0s;"></div>
+    <div class="particle" style="top: 110%; left: 10%; animation-duration: 16s; animation-delay: 2s;"></div>
+    <div class="particle" style="top: 115%; left: 15%; animation-duration: 18s; animation-delay: 4s;"></div>
+    <div class="particle" style="top: 102%; left: 20%; animation-duration: 12s; animation-delay: 1s;"></div>
+    <div class="particle" style="top: 108%; left: 25%; animation-duration: 20s; animation-delay: 3s;"></div>
+    <div class="particle" style="top: 112%; left: 30%; animation-duration: 15s; animation-delay: 5s;"></div>
+    <div class="particle" style="top: 118%; left: 35%; animation-duration: 17s; animation-delay: 2s;"></div>
+    <div class="particle" style="top: 100%; left: 40%; animation-duration: 19s; animation-delay: 0s;"></div>
+    <div class="particle" style="top: 110%; left: 45%; animation-duration: 13s; animation-delay: 6s;"></div>
+    <div class="particle" style="top: 115%; left: 50%; animation-duration: 16s; animation-delay: 1s;"></div>
+    <div class="particle" style="top: 120%; left: 55%; animation-duration: 18s; animation-delay: 4s;"></div>
+    <div class="particle" style="top: 105%; left: 60%; animation-duration: 14s; animation-delay: 2s;"></div>
+    <div class="particle" style="top: 110%; left: 65%; animation-duration: 20s; animation-delay: 3s;"></div>
+    <div class="particle" style="top: 108%; left: 70%; animation-duration: 15s; animation-delay: 5s;"></div>
+    <div class="particle" style="top: 112%; left: 75%; animation-duration: 17s; animation-delay: 0s;"></div>
+    <div class="particle" style="top: 118%; left: 80%; animation-duration: 19s; animation-delay: 6s;"></div>
+    <div class="particle" style="top: 100%; left: 85%; animation-duration: 13s; animation-delay: 1s;"></div>
+    <div class="particle" style="top: 115%; left: 90%; animation-duration: 16s; animation-delay: 4s;"></div>
+    <div class="particle" style="top: 105%; left: 95%; animation-duration: 18s; animation-delay: 2s;"></div>
+    <div class="particle" style="top: 110%; left: 3%; animation-duration: 14s; animation-delay: 3s;"></div>
+    <div class="particle" style="top: 120%; left: 8%; animation-duration: 20s; animation-delay: 5s;"></div>
+    <div class="particle" style="top: 118%; left: 13%; animation-duration: 15s; animation-delay: 0s;"></div>
+    <div class="particle" style="top: 105%; left: 18%; animation-duration: 17s; animation-delay: 6s;"></div>
+    <div class="particle" style="top: 110%; left: 23%; animation-duration: 19s; animation-delay: 1s;"></div>
+    <div class="particle" style="top: 115%; left: 28%; animation-duration: 13s; animation-delay: 4s;"></div>
+    <div class="particle" style="top: 120%; left: 33%; animation-duration: 16s; animation-delay: 2s;"></div>
+    <div class="particle" style="top: 108%; left: 38%; animation-duration: 18s; animation-delay: 3s;"></div>
+    <div class="particle" style="top: 112%; left: 43%; animation-duration: 14s; animation-delay: 5s;"></div>
+    <div class="particle" style="top: 118%; left: 48%; animation-duration: 20s; animation-delay: 0s;"></div>
+    <div class="particle" style="top: 100%; left: 53%; animation-duration: 17s; animation-delay: 6s;"></div>
+  </div>
+
   <!-- Decorative Background Shapes -->
-  <div class="bg-shape1"></div>
-  <div class="bg-shape2"></div>
-  <div class="bg-shape3"></div>
+  <!--<div class="bg-shape1"></div>-->
+  <!--<div class="bg-shape2"></div>-->
+  <!--<div class="bg-shape3"></div>-->
   <!-- Top Bar -->
-  <header class="relative z-10 w-full flex items-center justify-between px-8 py-6">
-    <span class="text-3xl font-black text-purple-700 tracking-tight drop-shadow">Cryptocal</span>
+  <header class="relative z-10 w-full flex items-center justify-between px-8 py-6 bg-black text-white">
+
+    <img src="{{ url_for('static', filename='logo2.png') }}" alt="Cryptocal" class="h-10 drop-shadow">
+
     <div class="flex items-center space-x-4">
       <form method="POST" action="{{ url_for('login') }}" class="flex items-center space-x-2 bg-white/80 rounded-full px-4 py-2 shadow">
         <input
-          class="px-3 py-2 rounded-full font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-purple-400 focus:bg-white"
+          class="px-3 py-2 rounded-full font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm text-black focus:outline-none focus:border-purple-400 focus:bg-white"
           type="text" name="username" id="username" placeholder="Username" required />
         <div class="relative">
           <input
-            class="px-3 py-2 rounded-full font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-purple-400 focus:bg-white pr-10"
+            class="px-3 py-2 rounded-full font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm text-black focus:outline-none focus:border-purple-400 focus:bg-white pr-10"
             type="password" name="password" id="password" placeholder="Password" required />
           <button type="button" onclick="togglePassword()" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500">
             <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -69,48 +157,51 @@
             </svg>
           </button>
         </div>
-        <button
-          class="tracking-wide font-semibold bg-gradient-to-r from-purple-500 to-pink-500 text-white px-5 py-2 rounded-full hover:from-purple-600 hover:to-pink-600 transition-all duration-300 ease-in-out focus:shadow-outline focus:outline-none"
-          type="submit">
+        <button class="tracking-wide font-semibold bg-[#3dff90] text-black px-5 py-2 rounded-full border-2 border-transparent hover:border-[#3dff90] hover:shadow-[0_0_20px_#3dff90] hover:scale-105 transition-all duration-300 ease-in-out focus:outline-none">
           Sign In
         </button>
       </form>
-      <a href="{{ url_for('signup') }}" class="ml-2 text-purple-700 font-bold hover:underline text-lg">Sign Up</a>
+      <a href="{{ url_for('signup') }}" class="ml-2 font-bold hover:underline text-lg text-white">Sign Up</a>
     </div>
   </header>
   <!-- Main Section -->
   <main class="relative z-10 flex-1 flex flex-col items-center justify-center pt-8 pb-0">
     <div class="w-full max-w-4xl mx-auto text-center mb-10">
-      <h1 class="text-4xl font-black mb-4 text-transparent bg-clip-text bg-gradient-to-r from-purple-700 via-pink-500 to-yellow-400 drop-shadow">
-        Welcome to Your <span class="underline decoration-pink-400">Personal Trading Journal</span>
+      <h1 class="text-4xl font-[Coolvetica] mb-4 text-white drop-shadow">
+
+        Welcome to Your <span class="text-[#3dff90]">Personal Trading Journal</span>
       </h1>
-      <p class="text-lg text-gray-700 mb-8 max-w-2xl mx-auto">
-        Track, analyze, and improve your trading performance with <span class="font-bold text-purple-700">Cryptocal</span>.
+      <p class="text-lg text-white mb-8 max-w-2xl mx-auto">
+        Track, analyse, and improve your trading performance with <span class="font-bold text-[#3dff90]">Cryptocal</span>.
         Securely log your trades, visualize your progress, and stay updated with the latest crypto prices and news.
       </p>
+
       <!-- What you can do -->
       <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-        <div class="bg-white/80 rounded-xl shadow p-4 flex flex-col items-center">
-          <span class="text-purple-700 font-bold text-lg mb-1">Analyse</span>
-          <span class="text-xs text-gray-600 text-center">Deeply analyze your trading data and performance.</span>
+        <div class="shine-card relative overflow-hidden bg-black border border-[#3dff90] rounded-xl shadow p-4 flex flex-col items-center">
+          <span class="text-white font-bold text-lg mb-1">Analyse</span>
+          <span class="text-xs text-white text-center">Deeply analyse your trading data and performance.</span>
         </div>
-        <div class="bg-white/80 rounded-xl shadow p-4 flex flex-col items-center">
-          <span class="text-pink-600 font-bold text-lg mb-1">Report</span>
-          <span class="text-xs text-gray-600 text-center">Generate detailed reports for your trades and strategies.</span>
+        <div class="shine-card relative overflow-hidden bg-black border border-[#3dff90] rounded-xl shadow p-4 flex flex-col items-center">
+          <span class="text-white font-bold text-lg mb-1">Report</span>
+          <span class="text-xs text-white text-center">Generate detailed reports for your trades and strategies.</span>
         </div>
-        <div class="bg-white/80 rounded-xl shadow p-4 flex flex-col items-center">
-          <span class="text-yellow-600 font-bold text-lg mb-1">Extract</span>
-          <span class="text-xs text-gray-600 text-center">Export and extract your trading data for further use.</span>
+        <div class="shine-card relative overflow-hidden bg-black border border-[#3dff90] rounded-xl shadow p-4 flex flex-col items-center">
+          <span class="text-white font-bold text-lg mb-1">Extract</span>
+          <span class="text-xs text-white text-center">Export and extract your trading data for further use.</span>
         </div>
-        <div class="bg-white/80 rounded-xl shadow p-4 flex flex-col items-center">
-          <span class="text-green-600 font-bold text-lg mb-1">Compare</span>
-          <span class="text-xs text-gray-600 text-center">Compare your results across time, assets, or strategies.</span>
+        <div class="shine-card relative overflow-hidden bg-black border border-[#3dff90] rounded-xl shadow p-4 flex flex-col items-center">
+          <span class="text-white font-bold text-lg mb-1">Compare</span>
+          <span class="text-xs text-white text-center">Compare your results across time, assets, or strategies.</span>
         </div>
-        <div class="bg-white/80 rounded-xl shadow p-4 flex flex-col items-center">
-          <span class="text-blue-600 font-bold text-lg mb-1">Connect</span>
-          <span class="text-xs text-gray-600 text-center">Connect with other traders and share insights.</span>
+        <div class="shine-card relative overflow-hidden bg-black border border-[#3dff90] rounded-xl shadow p-4 flex flex-col items-center">
+          <span class="text-white font-bold text-lg mb-1">Connect</span>
+          <span class="text-xs text-white text-center">Connect with other traders and share insights.</span>
         </div>
       </div>
+
+
+
     </div>
     <!-- Crypto Prices Bar -->
     <div class="w-full max-w-3xl mx-auto mb-10">
@@ -122,80 +213,26 @@
     </div>
     <!-- News Section -->
     <section class="w-full max-w-4xl mx-auto mb-12">
-      <h2 class="text-2xl font-bold mb-4 text-purple-700 text-left">Latest Crypto News</h2>
+      <h2 class="text-2xl font-bold mb-4 text-[#3dff90] text-left">Latest Crypto News</h2>
+
       <div id="cryptoNews" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
     </section>
   </main>
+  <script src="{{ url_for('static', filename='js/login.js') }}"></script>
   <script>
-    function togglePassword() {
-      const pwd = document.getElementById('password');
-      const icon = document.getElementById('eyeIcon');
-      if (pwd.type === 'password') {
-        pwd.type = 'text';
-        icon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M13.875 18.825A10.05 10.05 0 0112 19c-4.418 0-8-3.134-8-7a9.978 9.978 0 013.563-7.563M15 12a3 3 0 11-6 0 3 3 0 016 0zm6 0c0 1.657-.672 3.157-1.757 4.243M3 3l18 18" />`;
-      } else {
-        pwd.type = 'password';
-        icon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M15 12a3 3 0 11-6 0 3 3 0 016 0zm6 0c0 3.866-3.582-7-8-7s-8-3.134-8-7 3.582-7 8-7 8 3.134 8 7z" />`;
-      }
-    }
+    const shineCards = document.querySelectorAll('.shine-card');
 
-    // Fetch crypto prices (using CoinGecko API)
-    async function fetchCryptoPrices() {
-      try {
-        const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,binancecoin,cardano,dogecoin&vs_currencies=usd');
-        if (!res.ok) throw new Error('Price fetch failed');
-        const data = await res.json();
-        const prices = [
-          { name: 'Bitcoin', id: 'bitcoin' },
-          { name: 'Ethereum', id: 'ethereum' },
-          { name: 'Solana', id: 'solana' },
-          { name: 'BNB', id: 'binancecoin' },
-          { name: 'Cardano', id: 'cardano' },
-          { name: 'Dogecoin', id: 'dogecoin' }
-        ];
-        const pricesContainer = document.getElementById('cryptoPrices');
-        pricesContainer.innerHTML = '';
-        prices.forEach(coin => {
-          pricesContainer.innerHTML += `
-            <div class="flex flex-col items-center min-w-[100px]">
-              <span class="font-semibold">${coin.name}</span>
-              <span class="text-gray-700 text-lg">$${data[coin.id].usd.toLocaleString()}</span>
-            </div>
-          `;
-        });
-      } catch (e) {
-        document.getElementById('cryptoPrices').innerHTML = '<div class="text-red-500">Unable to load prices at this time.</div>';
-      }
-    }
-    fetchCryptoPrices();
-    setInterval(fetchCryptoPrices, 60000);
+    shineCards.forEach(card => {
+      card.addEventListener('mouseenter', () => {
+        card.classList.add('animate-shine');
+      });
 
-    // Fetch latest crypto news from your Flask backend
-    async function fetchCryptoNews() {
-      try {
-        const res = await fetch('/api/cryptonews');
-        if (!res.ok) throw new Error('News fetch failed');
-        const news = await res.json();
-        const newsContainer = document.getElementById('cryptoNews');
-        newsContainer.innerHTML = '';
-        news.forEach(article => {
-          newsContainer.innerHTML += `
-            <a href="${article.url}" target="_blank" class="block bg-white rounded-lg shadow hover:shadow-lg transition p-4">
-              <div class="font-semibold text-lg mb-2">${article.title}</div>
-              <div class="text-gray-500 text-sm mb-1">${article.published_on ? new Date(article.published_on * 1000).toLocaleDateString() : ''}</div>
-              <div class="text-gray-700 text-sm">${article.source || ''}</div>
-            </a>
-          `;
-        });
-      } catch (e) {
-        document.getElementById('cryptoNews').innerHTML = '<div class="text-red-500">Unable to load news at this time.</div>';
-      }
-    }
-    fetchCryptoNews();
-    setInterval(fetchCryptoNews, 1000 * 60 * 60 * 2);
+      card.addEventListener('animationend', () => {
+        card.classList.remove('animate-shine');
+      });
+    });
   </script>
+
 </body>
 </html>
 

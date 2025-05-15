@@ -1,6 +1,8 @@
+import os
 from flask import render_template, request, redirect, url_for, flash, session, jsonify
 from flask import send_from_directory, abort
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 from app import app, db
 from app.models import User, Trade, Image, Share
 from app.db_tools import can_user_access_image, generate_feed_items, get_ids_from_filename, get_image_filename_from_ids
@@ -8,6 +10,14 @@ from datetime import datetime, timedelta
 from app.generate_image import create_image
 import requests
 import os
+
+UPLOAD_FOLDER = os.path.join(app.root_path, 'static', 'images')
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/')
 def home():
@@ -30,8 +40,8 @@ def entry():
 
     if request.method == 'POST':
         try:
-            # Get data from the JSON request
-            data = request.json
+            # Get data from the form
+            data = request.form
             date = data.get('date')
             profit = data.get('profit')
             notes = data.get('notes', '')
@@ -43,13 +53,21 @@ def entry():
             # Parse the date
             trade_date = datetime.strptime(date, '%Y-%m-%d').date()
 
-             # Check if a trade already exists for this date and user
+            # Check if a trade already exists for this date and user
             existing_trade = Trade.query.filter_by(user_id=session['user_id'], trade_date=trade_date).first()
             if existing_trade:
                 return jsonify({'error': 'A trade already exists for this date!'}), 400
 
-            # Save the entry to the database
-            new_trade = Trade(user_id=session['user_id'], trade_date=trade_date, profit=float(profit), comment=notes)
+            # Handle image uploads
+            image_files = request.files.getlist('images')
+            image_filenames = []
+            for image in image_files:
+                if image and allowed_file(image.filename):
+                    filename = secure_filename(image.filename)
+                    image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                    image_filenames.append(filename)
+
+            new_trade = Trade(user_id=session['user_id'], trade_date=trade_date, profit=float(profit), comment=notes, image_path=','.join(image_filenames) if image_filenames else None)
             db.session.add(new_trade)
             db.session.commit()
 
@@ -226,14 +244,21 @@ def get_entry():
         trade = Trade.query.filter_by(user_id=session['user_id'], trade_date=entry_date).first()
 
         if not trade:
-            return jsonify({'profit': 0, 'notes': ''}), 200
+            return jsonify({'profit': 0, 'notes': '', 'images': []}), 200
+
+        # Construct full URLs for the images
+        image_urls = []
+        if trade.image_path:
+            image_urls = [url_for('static', filename=f'images/{filename}', _external=True) for filename in trade.image_path.split(',')]
 
         # Return the entry data
         return jsonify({
             'profit': trade.profit,
-            'notes': trade.comment
+            'notes': trade.comment,
+            'images': image_urls
         }), 200
     except Exception as e:
+        print("Error fetching entry:", e)
         return jsonify({'error': 'An error occurred while fetching the entry.'}), 500
 
 @app.route('/api/stats')
