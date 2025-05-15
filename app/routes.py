@@ -55,8 +55,6 @@ def entry():
 
             # Check if a trade already exists for this date and user
             existing_trade = Trade.query.filter_by(user_id=session['user_id'], trade_date=trade_date).first()
-            if existing_trade:
-                return jsonify({'error': 'A trade already exists for this date!'}), 400
 
             # Handle image uploads
             image_files = request.files.getlist('images')
@@ -67,8 +65,18 @@ def entry():
                     image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                     image_filenames.append(filename)
 
-            new_trade = Trade(user_id=session['user_id'], trade_date=trade_date, profit=float(profit), comment=notes, image_path=','.join(image_filenames) if image_filenames else None)
-            db.session.add(new_trade)
+            if existing_trade:
+                # Update the existing trade
+                existing_trade.profit = float(profit)
+                existing_trade.comment = notes
+                if image_filenames:
+                    existing_trade.image_path = ','.join(image_filenames)
+                else:
+                    existing_trade.image_path = None
+            else:
+                # Create a new trade
+                new_trade = Trade(user_id=session['user_id'], trade_date=trade_date, profit=float(profit), comment=notes, image_path=','.join(image_filenames) if image_filenames else None)
+                db.session.add(new_trade)
             db.session.commit()
 
             return jsonify({'message': 'Entry saved successfully!'}), 200
@@ -76,6 +84,37 @@ def entry():
             return jsonify({'error': 'An error occurred while saving the entry.'}), 500
 
     return render_template('entry.html')
+
+@app.route('/entry/delete', methods=['POST'])
+def delete_entry():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    try:
+        # Get the date from the request
+        data = request.json
+        date = data.get('date')
+
+        if not date:
+            return jsonify({'error': 'Date is required to delete an entry.'}), 400
+
+        # Parse the date
+        trade_date = datetime.strptime(date, '%Y-%m-%d').date()
+
+        # Find the entry for the user and date
+        trade = Trade.query.filter_by(user_id=session['user_id'], trade_date=trade_date).first()
+
+        if not trade:
+            return jsonify({'error': 'No entry found for the specified date.'}), 404
+
+        # Delete the entry
+        db.session.delete(trade)
+        db.session.commit()
+
+        return jsonify({'message': 'Entry deleted successfully.'}), 200
+    except Exception as e:
+        print("Error deleting entry:", e)
+        return jsonify({'error': 'An error occurred while deleting the entry.'}), 500
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
