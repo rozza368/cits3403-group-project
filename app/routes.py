@@ -2,7 +2,7 @@ from flask import render_template, request, redirect, url_for, flash, session, j
 from flask import send_from_directory, abort
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import app, db
-from app.models import User, Trade, Image
+from app.models import User, Trade, Image, Share
 from app.db_tools import can_user_access_image, generate_feed_items, get_ids_from_filename, get_image_filename_from_ids
 from datetime import datetime, timedelta
 from app.generate_image import create_image
@@ -160,10 +160,17 @@ def api_create_image():
         # Get URL parameters
         amount = request.args.get('amount')
         date_range = request.args.get('date_range')
+        share_username = request.args.get('share')
 
         # Optionally, validate parameters
         if not amount or not date_range:
             return jsonify({'error': 'Missing required parameters: amount and date_range.'}), 400
+
+        shared_user_id = None
+        if share_username:
+            shared_user_id = User.query.filter_by(username=share_username).first()
+            if not shared_user_id:
+                return jsonify({'error': 'User to share with not found.'}), 404
 
         # Generate a new image entry in the database
         new_image = Image(author_id=session['user_id'])
@@ -177,6 +184,16 @@ def api_create_image():
         file_path = os.path.join(img_dir, filename)
 
         create_image(int(amount), date_range, file_path)
+
+        if shared_user_id:
+            # add user to shared list
+            share_entry = Share(
+                share_type="image",
+                trade_or_image_id=new_image.image_id,
+                user_id_shared_to=shared_user_id.user_id
+            )
+            db.session.add(share_entry)
+            db.session.commit()
 
         return jsonify({'message': 'Image created successfully.', 'filename': filename}), 201
     except Exception as e:

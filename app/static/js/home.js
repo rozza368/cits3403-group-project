@@ -272,7 +272,7 @@ shareProfitForm.addEventListener('submit', async (e) => {
         const params = new URLSearchParams({
             amount: parseInt(profit, 10),
             date_range: comment,
-            // username
+            share: username
         });
         const response = await fetch(`/api/create_image?${params.toString()}`, {
             method: 'GET'
