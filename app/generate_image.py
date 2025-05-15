@@ -33,7 +33,7 @@ def create_image(amount, date_range, output_path="output_image.png"):
     # Draw the amount
     text_color = "green" if is_profit else "red"
     text_y += 72  # Adjust vertical spacing
-    draw.text((text_x, text_y), f"{'+' if is_profit else '-'}${amount}", fill=text_color, font=large_bold_font)
+    draw.text((text_x, text_y), f"{'+' if is_profit else '-'}${amount:,}", fill=text_color, font=large_bold_font)
 
     # Draw the date range
     text_y += 96 + profile_pic_padding  # Adjust vertical spacing

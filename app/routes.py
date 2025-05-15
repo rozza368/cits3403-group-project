@@ -151,7 +151,15 @@ def api_create_image():
         date_to = data.get('date_to')
         share_username = data.get('share')
 
-        amount = 0  # TODO: calculate from trades db
+        # Calculate total profit for the user in the given date range
+        start_date = datetime.strptime(date_from, "%Y-%m-%d").date()
+        end_date = datetime.strptime(date_to, "%Y-%m-%d").date()
+        trades = Trade.query.filter(
+            Trade.user_id == session['user_id'],
+            Trade.trade_date >= start_date,
+            Trade.trade_date <= end_date
+        ).all()
+        amount = sum(trade.profit for trade in trades)
 
         # Optionally, validate parameters
         if not date_from or not date_to:
