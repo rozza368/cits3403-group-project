@@ -121,19 +121,8 @@ def feed():
     # - image: the filename of the image, from `static/img/`
     # - author: the name of the author of the post
     #
-    feed_items = [
-        {
-            "type": "post",
-            "content": "hello",
-            "author": "Mike",
-        },
-        {
-            "type": "image",
-            "image": "test.png",
-            "content": "hello",
-            "author": "Alex",
-        },
-    ]
+    feed_items = generate_feed_items(session['user_id'])
+    feed_items.reverse()  # order items as newest first
     return render_template('feed.html', feed_items=feed_items)
 
 @app.route('/static/img/<filename>')
