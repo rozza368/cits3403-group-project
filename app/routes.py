@@ -342,13 +342,14 @@ def api_cryptoprices():
 @app.route('/api/profits', methods=['GET'])
 def get_profits():
     try:
-        # Get the current date
-        now = datetime.now()
-        year = now.year
-        month = now.month
-        today = now.day
+        # Get query parameters
+        year = request.args.get('year', type=int)
+        month = request.args.get('month', type=int)
 
-        # Fetch profits for the current month
+        if not year or not month:
+            return jsonify({'error': 'Year and month are required.'}), 400
+
+        # Fetch profits for the specified month
         trades = Trade.query.filter(
             Trade.user_id == session['user_id'],
             db.extract('year', Trade.trade_date) == year,
@@ -358,19 +359,6 @@ def get_profits():
         # Format the data
         profits = [{'day': trade.trade_date.day, 'profit': trade.profit} for trade in trades]
 
-        # Fetch profits for the last 7 days
-        last_week_start = now - timedelta(days=7)
-        last_week_trades = Trade.query.filter(
-            Trade.user_id == session['user_id'],
-            Trade.trade_date >= last_week_start.date(),
-            Trade.trade_date <= now.date()
-        ).all()
-
-        last_week_profits = [{'day': trade.trade_date.day, 'profit': trade.profit} for trade in last_week_trades]
-
-        return jsonify({
-            'month_profits': profits,
-            'last_week_profits': last_week_profits
-        }), 200
+        return jsonify({'month_profits': profits}), 200
     except Exception as e:
         return jsonify({'error': 'An error occurred while fetching profits.'}), 500
