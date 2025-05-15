@@ -1,11 +1,15 @@
 import os
 from flask import render_template, request, redirect, url_for, flash, session, jsonify
+from flask import send_from_directory, abort
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from app import app, db
-from app.models import User, Trade
+from app.models import User, Trade, Image, Share
+from app.db_tools import can_user_access_image, generate_feed_items, get_ids_from_filename, get_image_filename_from_ids
 from datetime import datetime, timedelta
+from app.generate_image import create_image
 import requests
+import os
 
 UPLOAD_FOLDER = os.path.join(app.root_path, 'static', 'images')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
@@ -19,14 +23,14 @@ def allowed_file(filename):
 def home():
     if 'user_id' not in session:
         return redirect(url_for('login'))
-    
+
     return render_template('home.html')
 
 @app.route('/index')
 def index():
     if 'user_id' not in session:
         return redirect(url_for('login'))
-    
+
     return render_template('index.html')
 
 @app.route('/entry', methods=['GET', 'POST'])
@@ -122,6 +126,99 @@ def logout():
     flash('Log out successful.', 'success')
     return redirect(url_for('login'))
 
+@app.route('/feed')
+def feed():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    #
+    # feed_items
+    #
+    # - type: can be post or image
+    # - content: the text that will be displayed in the post
+    # - image: the filename of the image, from `static/img/`
+    # - author: the name of the author of the post
+    #
+    feed_items = generate_feed_items(session['user_id'])
+    feed_items.reverse()  # order items as newest first
+    return render_template('feed.html', feed_items=feed_items)
+
+@app.route('/static/img/<filename>')
+def protected_image(filename):
+    if 'user_id' not in session:
+        flash('You must be logged in to view this image.', 'error')
+        return redirect(url_for('login'))
+
+    img_dir = os.path.join(app.root_path, 'static', 'img')
+    if not os.path.isfile(os.path.join(img_dir, filename)):
+        abort(404)
+
+    author_id, image_id = get_ids_from_filename(filename)
+    if can_user_access_image(session['user_id'], image_id):
+        return send_from_directory(img_dir, filename)
+    return jsonify({'error': 'Not authorised to access this file'}), 403
+
+@app.route('/api/create_image', methods=['POST', 'GET'])
+def api_create_image():
+    if 'user_id' not in session:
+        return jsonify({'error': 'User not logged in.'}), 401
+
+    try:
+        data = request.get_json()
+        date_from = data.get('date_from')
+        date_to = data.get('date_to')
+        share_username = data.get('share')
+
+        # Calculate total profit for the user in the given date range
+        start_date = datetime.strptime(date_from, "%Y-%m-%d").date()
+        end_date = datetime.strptime(date_to, "%Y-%m-%d").date()
+        trades = Trade.query.filter(
+            Trade.user_id == session['user_id'],
+            Trade.trade_date >= start_date,
+            Trade.trade_date <= end_date
+        ).all()
+        amount = sum(trade.profit for trade in trades)
+
+        # Optionally, validate parameters
+        if not date_from or not date_to:
+            return jsonify({'error': 'Missing required parameters: date_from, date_to.'}), 400
+
+        date_range = f"{date_from} to {date_to}"
+        shared_user_id = None
+        if share_username:
+            shared_user_id = User.query.filter_by(username=share_username).first()
+            if not shared_user_id:
+                return jsonify({'error': 'User to share with not found.'}), 404
+
+        # Generate a new image entry in the database
+        new_image = Image(author_id=session['user_id'])
+        db.session.add(new_image)
+        db.session.commit()
+
+        # Get filename for the image
+        filename = get_image_filename_from_ids(session['user_id'], new_image.image_id)
+        img_dir = os.path.join(app.root_path, 'static', 'img')
+        os.makedirs(img_dir, exist_ok=True)
+        file_path = os.path.join(img_dir, filename)
+
+        create_image(int(amount), date_range, file_path)
+
+        if shared_user_id:
+            # add user to shared list
+            share_entry = Share(
+                share_type="image",
+                trade_or_image_id=new_image.image_id,
+                user_id_shared_to=shared_user_id.user_id
+            )
+            db.session.add(share_entry)
+            db.session.commit()
+
+        return jsonify({'message': 'Image created successfully.', 'filename': filename}), 201
+    except Exception as e:
+        print(e)
+        db.session.rollback()
+        return jsonify({'error': 'Failed to create image.'}), 500
+
 @app.route('/api/user_list', methods=['GET'])
 def get_user_list():
     users = User.query.with_entities(User.username).all()
@@ -202,7 +299,7 @@ def api_cryptoprices():
     except Exception as e:
         print("Crypto prices error:", e)
         return jsonify({}), 500
-    
+
 @app.route('/api/profits', methods=['GET'])
 def get_profits():
     try:
