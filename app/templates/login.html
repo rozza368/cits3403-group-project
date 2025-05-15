@@ -68,6 +68,33 @@
       box-shadow: 0 0 20px #3dff90;
       transform: scale(1.05);
     }
+
+
+    .shine-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(120deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0) 100%);
+      transform: translateX(-100%) rotate(25deg);
+      pointer-events: none;
+    }
+
+    .shine-card.animate-shine::before {
+      animation: shineEffect 1s ease forwards;
+    }
+
+    @keyframes shineEffect {
+      0% {
+        transform: translateX(-100%) rotate(25deg);
+      }
+      100% {
+        transform: translateX(100%) rotate(25deg);
+      }
+    }
+
   </style>
 </head>
 <body class="relative min-h-screen bg-cover bg-center flex flex-col overflow-x-hidden" style="background-image: url('{{ url_for('static', filename='images/background.png') }}');">
@@ -145,29 +172,29 @@
         Welcome to Your <span class="text-[#3dff90]">Personal Trading Journal</span>
       </h1>
       <p class="text-lg text-white mb-8 max-w-2xl mx-auto">
-        Track, analyze, and improve your trading performance with <span class="font-bold text-[#3dff90]">Cryptocal</span>.
+        Track, analyse, and improve your trading performance with <span class="font-bold text-[#3dff90]">Cryptocal</span>.
         Securely log your trades, visualize your progress, and stay updated with the latest crypto prices and news.
       </p>
 
       <!-- What you can do -->
       <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-        <div class="bg-black border border-[#3dff90] rounded-xl shadow p-4 flex flex-col items-center">
+        <div class="shine-card relative overflow-hidden bg-black border border-[#3dff90] rounded-xl shadow p-4 flex flex-col items-center">
           <span class="text-white font-bold text-lg mb-1">Analyse</span>
-          <span class="text-xs text-white text-center">Deeply analyze your trading data and performance.</span>
+          <span class="text-xs text-white text-center">Deeply analyse your trading data and performance.</span>
         </div>
-        <div class="bg-black border border-[#3dff90] rounded-xl shadow p-4 flex flex-col items-center">
+        <div class="shine-card relative overflow-hidden bg-black border border-[#3dff90] rounded-xl shadow p-4 flex flex-col items-center">
           <span class="text-white font-bold text-lg mb-1">Report</span>
           <span class="text-xs text-white text-center">Generate detailed reports for your trades and strategies.</span>
         </div>
-        <div class="bg-black border border-[#3dff90] rounded-xl shadow p-4 flex flex-col items-center">
+        <div class="shine-card relative overflow-hidden bg-black border border-[#3dff90] rounded-xl shadow p-4 flex flex-col items-center">
           <span class="text-white font-bold text-lg mb-1">Extract</span>
           <span class="text-xs text-white text-center">Export and extract your trading data for further use.</span>
         </div>
-        <div class="bg-black border border-[#3dff90] rounded-xl shadow p-4 flex flex-col items-center">
+        <div class="shine-card relative overflow-hidden bg-black border border-[#3dff90] rounded-xl shadow p-4 flex flex-col items-center">
           <span class="text-white font-bold text-lg mb-1">Compare</span>
           <span class="text-xs text-white text-center">Compare your results across time, assets, or strategies.</span>
         </div>
-        <div class="bg-black border border-[#3dff90] rounded-xl shadow p-4 flex flex-col items-center">
+        <div class="shine-card relative overflow-hidden bg-black border border-[#3dff90] rounded-xl shadow p-4 flex flex-col items-center">
           <span class="text-white font-bold text-lg mb-1">Connect</span>
           <span class="text-xs text-white text-center">Connect with other traders and share insights.</span>
         </div>
@@ -192,6 +219,20 @@
     </section>
   </main>
   <script src="{{ url_for('static', filename='js/login.js') }}"></script>
+  <script>
+    const shineCards = document.querySelectorAll('.shine-card');
+
+    shineCards.forEach(card => {
+      card.addEventListener('mouseenter', () => {
+        card.classList.add('animate-shine');
+      });
+
+      card.addEventListener('animationend', () => {
+        card.classList.remove('animate-shine');
+      });
+    });
+  </script>
+
 </body>
 </html>
 
