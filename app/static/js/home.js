@@ -246,6 +246,9 @@ const closeShareProfitDialog = document.getElementById('closeShareProfitDialog')
 const shareProfitForm = document.getElementById('shareProfitForm');
 const shareProfitMessage = document.getElementById('shareProfitMessage');
 
+const dateFrom = document.getElementById('dateFrom').value;
+const dateTo = document.getElementById('dateTo').value;
+
 shareProfitBtn.addEventListener('click', () => {
     shareProfitDialog.classList.remove('hidden');
     shareProfitMessage.textContent = '';
@@ -264,18 +267,19 @@ shareProfitDialog.addEventListener('click', (e) => {
 
 shareProfitForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const profit = document.getElementById('profitInput').value;
-    const comment = document.getElementById('commentInput').value;
+    const dateFrom = document.getElementById('dateFrom').value;
+    const dateTo = document.getElementById('dateTo').value;
     const username = document.getElementById('usernameSearch').value;
 
     try {
-        const params = new URLSearchParams({
-            amount: parseInt(profit, 10),
-            date_range: comment,
-            share: username
-        });
-        const response = await fetch(`/api/create_image?${params.toString()}`, {
-            method: 'GET'
+        const response = await fetch('/api/create_image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                date_from: dateFrom,
+                date_to: dateTo,
+                share: username
+            })
         });
         if (response.ok) {
             shareProfitMessage.textContent = 'Profit info shared successfully!';

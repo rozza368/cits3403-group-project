@@ -146,15 +146,18 @@ def api_create_image():
         return jsonify({'error': 'User not logged in.'}), 401
 
     try:
-        # Get URL parameters
-        amount = request.args.get('amount')
-        date_range = request.args.get('date_range')
-        share_username = request.args.get('share')
+        data = request.get_json()
+        date_from = data.get('date_from')
+        date_to = data.get('date_to')
+        share_username = data.get('share')
+
+        amount = 0  # TODO: calculate from trades db
 
         # Optionally, validate parameters
-        if not amount or not date_range:
-            return jsonify({'error': 'Missing required parameters: amount and date_range.'}), 400
+        if not date_from or not date_to:
+            return jsonify({'error': 'Missing required parameters: date_from, date_to.'}), 400
 
+        date_range = f"{date_from} to {date_to}"
         shared_user_id = None
         if share_username:
             shared_user_id = User.query.filter_by(username=share_username).first()
