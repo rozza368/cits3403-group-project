@@ -1,38 +1,39 @@
 import os
-from flask import render_template, request, redirect, url_for, flash, session, jsonify
+from flask import render_template, request, redirect, url_for, flash, session, jsonify, current_app
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
-from app import app, db
+from app import db
 from app.models import User, Trade
+from app.blueprints import main
 from datetime import datetime, timedelta
 import requests
 
-UPLOAD_FOLDER = os.path.join(app.root_path, 'static', 'images')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+def get_upload_folder():
+    return os.path.join(current_app.root_path, 'static', 'images')
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@app.route('/')
+@main.route('/')
 def home():
     if 'user_id' not in session:
-        return redirect(url_for('login'))
+        return redirect(url_for('main.login'))
     
     return render_template('home.html')
 
-@app.route('/index')
+@main.route('/index')
 def index():
     if 'user_id' not in session:
-        return redirect(url_for('login'))
+        return redirect(url_for('main.login'))
     
     return render_template('index.html')
 
-@app.route('/entry', methods=['GET', 'POST'])
+@main.route('/entry', methods=['GET', 'POST'])
 def entry():
     if 'user_id' not in session:
-        return redirect(url_for('login'))
+        return redirect(url_for('main.login'))
 
     if request.method == 'POST':
         try:
@@ -60,7 +61,7 @@ def entry():
             for image in image_files:
                 if image and allowed_file(image.filename):
                     filename = secure_filename(image.filename)
-                    image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                    image.save(os.path.join(get_upload_folder(), filename))
                     image_filenames.append(filename)
 
             new_trade = Trade(user_id=session['user_id'], trade_date=trade_date, profit=float(profit), comment=notes, image_path=','.join(image_filenames) if image_filenames else None)
@@ -73,7 +74,7 @@ def entry():
 
     return render_template('entry.html')
 
-@app.route('/signup', methods=['GET', 'POST'])
+@main.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
         try:
@@ -82,53 +83,53 @@ def signup():
             password = request.form.get('password')
             if not username or not password:
                 flash('Username and password are required!', 'error')
-                return redirect(url_for('signup'))
+                return redirect(url_for('main.signup'))
             existing_user = User.query.filter_by(username=username).first()
             if existing_user:
                 flash('Username already exists!', 'error')
-                return redirect(url_for('signup'))
+                return redirect(url_for('main.signup'))
             hashed_password = generate_password_hash(password)
             new_user = User(username=username, email=email, password_hash=hashed_password)
             db.session.add(new_user)
             db.session.commit()
             flash('Account created successfully!', 'success')
-            return redirect(url_for('login'))
+            return redirect(url_for('main.login'))
         except Exception as e:
             flash('An error occurred while creating your account.', 'error')
-            return redirect(url_for('signup'))
+            return redirect(url_for('main.signup'))
     return render_template('signup.html')
 
-@app.route('/login', methods=['GET', 'POST'])
+@main.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
         if not username or not password:
             flash('Username and password are required!', 'error')
-            return redirect(url_for('login'))
+            return redirect(url_for('main.login'))
         user = User.query.filter_by(username=username).first()
         if user and check_password_hash(user.password_hash, password):
             session['user_id'] = user.user_id  # or user.id depending on your model
             flash('Logged in successfully!', 'success')
-            return redirect(url_for('home'))
+            return redirect(url_for('main.home'))
         else:
             flash('Invalid username or password!', 'error')
-            return redirect(url_for('login'))
+            return redirect(url_for('main.login'))
     return render_template('login.html')
 
-@app.route('/logout', methods=['POST'])
+@main.route('/logout', methods=['POST'])
 def logout():
     session.clear()
     flash('Log out successful.', 'success')
-    return redirect(url_for('login'))
+    return redirect(url_for('main.login'))
 
-@app.route('/api/user_list', methods=['GET'])
+@main.route('/api/user_list', methods=['GET'])
 def get_user_list():
     users = User.query.with_entities(User.username).all()
     user_list = {"users": [user[0] for user in users]}
     return user_list
 
-@app.route('/api/entry', methods=['GET'])
+@main.route('/api/entry', methods=['GET'])
 def get_entry():
     try:
         # Get query parameters for the date
@@ -164,13 +165,13 @@ def get_entry():
         print("Error fetching entry:", e)
         return jsonify({'error': 'An error occurred while fetching the entry.'}), 500
 
-@app.route('/api/stats')
+@main.route('/api/stats')
 def api_stats():
     user_count = User.query.count()
     trade_count = Trade.query.count()
     return jsonify({'users': user_count, 'trades': trade_count})
 
-@app.route('/api/cryptonews')
+@main.route('/api/cryptonews')
 def api_cryptonews():
     try:
         url = "https://min-api.cryptocompare.com/data/v2/news/?lang=EN"
@@ -191,7 +192,7 @@ def api_cryptonews():
         print("Crypto news error:", e)
         return jsonify([]), 500
 
-@app.route('/api/cryptoprices')
+@main.route('/api/cryptoprices')
 def api_cryptoprices():
     try:
         url = "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,binancecoin,cardano,dogecoin&vs_currencies=usd"
@@ -203,7 +204,7 @@ def api_cryptoprices():
         print("Crypto prices error:", e)
         return jsonify({}), 500
     
-@app.route('/api/profits', methods=['GET'])
+@main.route('/api/profits', methods=['GET'])
 def get_profits():
     try:
         # Get the current date
