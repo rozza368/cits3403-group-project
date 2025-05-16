@@ -98,30 +98,10 @@ async function fetchUserList() {
 }
 
 // --- Chart.js Graphs ---
-let websiteViewChart, dailySalesChart, completedTasksChart;
+let dailySalesChart;
 
 async function updateCharts() {
-    const { last_week_profits, month_profits } = await fetchProfits();
-
-    // Website View: Bar chart for last 7 days
-    const weekLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-    if (websiteViewChart) websiteViewChart.destroy();
-    websiteViewChart = new Chart(document.getElementById('websiteViewChart').getContext('2d'), {
-        type: 'bar',
-        data: {
-            labels: weekLabels,
-            datasets: [{
-                label: 'Profit',
-                data: last_week_profits,
-                backgroundColor: '#4ade80',
-                borderRadius: 6,
-            }]
-        },
-        options: {
-            plugins: { legend: { display: false } },
-            scales: { y: { beginAtZero: true } }
-        }
-    });
+    const { month_profits } = await fetchProfits();
 
     // Daily Sales: Line chart for each month
     const monthLabels = month_profits.map(p => p.day);
@@ -134,13 +114,13 @@ async function updateCharts() {
             datasets: [{
                 label: 'Sales',
                 data: monthProfits,
-                borderColor: '#1affb2', // changed from '#3b82f6'
-                backgroundColor: 'rgba(26,255,178,0.1)', // subtle fill
+                borderColor: '#1affb2',
+                backgroundColor: 'rgba(26,255,178,0.1)',
                 tension: 0.3,
                 fill: true,
                 pointRadius: 3,
-                pointBackgroundColor: '#1affb2', // changed from '#3b82f6'
-                pointBorderColor: '#1affb2' // changed from '#3b82f6'
+                pointBackgroundColor: '#1affb2',
+                pointBorderColor: '#1affb2'
             }]
         },
         options: {
@@ -302,124 +282,6 @@ shareProfitForm.addEventListener('submit', async (e) => {
 });
 
 document.addEventListener('DOMContentLoaded', function () {
-// --- Chart.js Graphs: Improved Styles ---
-// Website View Chart
-if (window.websiteViewChart) window.websiteViewChart.destroy();
-fetch('/api/entry')
-    .then(res => res.json())
-    .then(data => {
-    const ctx = document.getElementById('websiteViewChart').getContext('2d');
-    window.websiteViewChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-        labels: data.labels || ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-        datasets: [{
-            label: 'Views',
-            data: data.views || [120, 190, 300, 500, 200, 300, 400],
-            borderColor: '#3b82f6',
-            backgroundColor: ctx.createLinearGradient(0, 0, 0, 200),
-            pointBackgroundColor: '#fff',
-            pointBorderColor: '#3b82f6',
-            pointRadius: 5,
-            fill: true,
-            tension: 0.4
-        }]
-        },
-        options: {
-        plugins: {
-            legend: { display: false },
-            tooltip: {
-            backgroundColor: '#3b82f6',
-            titleColor: '#fff',
-            bodyColor: '#fff',
-            borderColor: '#fff',
-            borderWidth: 1
-            }
-        },
-        scales: {
-            x: { grid: { display: false }, ticks: { color: '#64748b' } },
-            y: { grid: { color: '#e0e7ef' }, ticks: { color: '#64748b' }, beginAtZero: true }
-        }
-        }
-    });
-    });
-
-// Daily Sales Chart
-if (window.dailySalesChart) window.dailySalesChart.destroy();
-fetch('/api/profits')
-    .then(res => res.json())
-    .then(data => {
-    const ctx = document.getElementById('dailySalesChart').getContext('2d');
-    window.dailySalesChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-        labels: data.labels || ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-        datasets: [{
-            label: 'Sales',
-            data: data.sales || [12, 19, 3, 5, 2, 3, 7],
-            backgroundColor: [
-            '#34d399', '#60a5fa', '#818cf8', '#fbbf24', '#f87171', '#38bdf8', '#a78bfa'
-            ],
-            borderRadius: 8,
-            barPercentage: 0.6
-        }]
-        },
-        options: {
-        plugins: {
-            legend: { display: false },
-            tooltip: {
-            backgroundColor: '#10b981',
-            titleColor: '#fff',
-            bodyColor: '#fff',
-            borderColor: '#fff',
-            borderWidth: 1
-            }
-        },
-        scales: {
-            x: { grid: { display: false }, ticks: { color: '#64748b' } },
-            y: { grid: { color: '#e0e7ef' }, ticks: { color: '#64748b' }, beginAtZero: true }
-        }
-        }
-    });
-    });
-
-// Completed Tasks Chart
-if (window.completedTasksChart) window.completedTasksChart.destroy();
-fetch('/api/entry')
-    .then(res => res.json())
-    .then(data => {
-    const ctx = document.getElementById('completedTasksChart').getContext('2d');
-    window.completedTasksChart = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-        labels: ['Completed', 'Pending'],
-        datasets: [{
-            data: data.completed || [75, 25],
-            backgroundColor: ['#a78bfa', '#e0e7ef'],
-            borderWidth: 2,
-            borderColor: '#fff'
-        }]
-        },
-        options: {
-        plugins: {
-            legend: {
-            display: true,
-            position: 'bottom',
-            labels: { color: '#64748b', font: { weight: 'bold' } }
-            },
-            tooltip: {
-            backgroundColor: '#a78bfa',
-            titleColor: '#fff',
-            bodyColor: '#fff',
-            borderColor: '#fff',
-            borderWidth: 1
-            }
-        },
-        cutout: '70%'
-        }
-    });
-    });
-
 // Fetch crypto prices and update the table
 async function fetchCryptoPricesTable() {
     try {
