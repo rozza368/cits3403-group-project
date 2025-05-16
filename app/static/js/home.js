@@ -160,6 +160,91 @@ async function fetchCryptoPrices() {
     }
 }
 
+// --- Tasks Section ---
+const tasksDateInput = document.getElementById('tasksDate');
+const tasksList = document.getElementById('tasksList');
+const addTaskForm = document.getElementById('addTaskForm');
+const addTaskMessage = document.getElementById('addTaskMessage');
+
+// Set default date to today and fetch tasks
+if (tasksDateInput) {
+    tasksDateInput.valueAsDate = new Date();
+    fetchAndRenderTasks();
+    tasksDateInput.addEventListener('change', fetchAndRenderTasks);
+}
+
+async function fetchAndRenderTasks() {
+    const date = tasksDateInput.value;
+    tasksList.innerHTML = '<div class="text-gray-400">Loading...</div>';
+    try {
+        const resp = await fetch(`/api/tasks?date=${date}`);
+        const data = await resp.json();
+        if (Array.isArray(data)) {
+            if (data.length === 0) {
+                tasksList.innerHTML = '<div class="text-gray-400">No tasks for this day.</div>';
+            } else {
+                tasksList.innerHTML = data.map(task => `
+                    <div class="flex items-center justify-between bg-gray-800 rounded-lg px-4 py-2">
+                        <span>${task.comment}</span>
+                        <button class="delete-task-btn text-red-500" data-id="${task.id}">Delete</button>
+                    </div>
+                `).join('');
+            }
+        } else {
+            tasksList.innerHTML = `<div class="text-red-500">${data.error || 'Failed to load tasks.'}</div>`;
+        }
+    } catch {
+        tasksList.innerHTML = '<div class="text-red-500">Failed to load tasks.</div>';
+    }
+}
+
+// Add new task
+if (addTaskForm) {
+    addTaskForm.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        addTaskMessage.textContent = '';
+        const comment = document.getElementById('taskInput').value.trim();
+        const date = tasksDateInput.value;
+        if (!comment) {
+            addTaskMessage.textContent = 'Task cannot be empty.';
+            return;
+        }
+        try {
+            const resp = await fetch('/api/tasks', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ comment, date })
+            });
+            const data = await resp.json();
+            if (resp.ok) {
+                addTaskForm.reset();
+                fetchAndRenderTasks();
+            } else {
+                addTaskMessage.textContent = data.error || 'Failed to add task.';
+            }
+        } catch {
+            addTaskMessage.textContent = 'Network error.';
+        }
+    });
+}
+
+// Delete task
+if (tasksList) {
+    tasksList.addEventListener('click', async function (e) {
+        if (e.target.classList.contains('delete-task-btn')) {
+            const id = e.target.getAttribute('data-id');
+            if (confirm('Delete this task?')) {
+                try {
+                    const resp = await fetch(`/api/tasks/${id}`, { method: 'DELETE' });
+                    if (resp.ok) {
+                        fetchAndRenderTasks();
+                    }
+                } catch {}
+            }
+        }
+    });
+}
+
 // --- Initial Render ---
 updateDashboard();
 updateCharts();
