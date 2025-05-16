@@ -48,7 +48,9 @@ class SeleniumTests(unittest.TestCase):
         self.server_thread = multiprocessing.Process(target=run_flask_app)
         self.server_thread.start()
         time.sleep(2)
-        self.driver = webdriver.Chrome()
+        options = webdriver.ChromeOptions()
+        options.add_argument("--headless")
+        self.driver = webdriver.Chrome(options=options)
         self.driver.get(localhost)
         self.login()
 
