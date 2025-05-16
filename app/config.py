@@ -9,6 +9,10 @@ class Config:
 class DevelopmentConfig(Config):
     SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(basedir, "app.db")
 
-class TestConfig(Config):
+class UnitTestConfig(Config):
     SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
+    TESTING = True
+
+class SystemTestConfig(Config):
+    SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(basedir, "test.db")
     TESTING = True

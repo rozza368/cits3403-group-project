@@ -1,7 +1,7 @@
 import unittest
 from app import create_app, db
 from app.models import User, Trade, Image, Share
-from app.config import TestConfig
+from app.config import UnitTestConfig
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import date
 
@@ -17,7 +17,7 @@ class BasicTests(unittest.TestCase):
     
     def setUp(self):
         # Runs before each test method
-        self.app = create_app(TestConfig)
+        self.app = create_app(UnitTestConfig)
         self.app_context = self.app.app_context()
         self.app_context.push()
         db.create_all()
