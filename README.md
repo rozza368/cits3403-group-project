@@ -31,7 +31,9 @@ The intuitive interface is designed for quick data entry and easy navigation, su
 
 ## Setup
 
-**First, create a Python virtual environment and source it:**
+**First, ensure that you have the correct .env in your base directory**
+
+**Next, create a Python virtual environment and source it:**
 
 On Linux:
 ```bash
