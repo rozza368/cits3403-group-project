@@ -67,4 +67,30 @@ On Windows:
 
 ## Running Tests
 
-(TODO...)
+On Linux:
+
+1. Make sure your virtual environment is activated:
+   ```bash
+   source application-env/bin/activate
+   ```
+2. From the project root directory, run:
+   ```bash
+   python -m unittest discover -s test
+   ```
+This will automatically discover and run all tests in the `test` folder.
+
+On Windows
+
+1. Make sure your virtual environment is activated:
+   ```powershell
+   .\application-env\Scripts\activate
+   ```
+2. From the project root directory, run:
+   ```powershell
+   python -m unittest discover -s test
+   ```
+This will automatically discover and run all tests in the `test` folder.
+
+## Acknowledgement
+
+This project utilised AI tools such as ChatGPT and Github Copilot to assist with its creation.

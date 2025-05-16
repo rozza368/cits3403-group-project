@@ -280,8 +280,9 @@
   {% include "_navbar.html" %}
   <!-- Dashboard Content -->
   <main class="flex-1 w-full max-w-7xl mx-auto px-4 py-8">
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-      <!-- Card 1: Today's Money -->
+    <!-- Top 3 Cards Row -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+      <!-- Card 1: Today's Profit -->
       <div class="glow-card p-5 flex flex-col">
         <div class="flex items-center space-x-3">
           <div class="bg-gray-800 text-white rounded-full p-2">
@@ -291,7 +292,7 @@
             </svg>
           </div>
           <div class="flex flex-col">
-            <span class="text-gray-500 text-xs">Today's Money</span>
+            <span class="text-gray-500 text-xs">Today's Profit</span>
             <span id="todayMoney" class="text-2xl font-bold">$0</span>
           </div>
         </div>
@@ -356,32 +357,9 @@
         </div>
       </div>
     </div>
-    <!-- Charts -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-      <!-- Website View -->
-      <div class="glow-card p-6 flex flex-col hover:shadow-xl transition-shadow duration-300">
-        <div class="flex items-center mb-4">
-          <div class="bg-blue-100 text-blue-700 rounded-full p-2 mr-3">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path d="M3 17v-2a4 4 0 014-4h10a4 4 0 014 4v2" stroke-linecap="round" stroke-linejoin="round"/>
-              <circle cx="12" cy="7" r="4" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <div>
-            <div class="font-bold text-lg text-blue-700">Website View</div>
-            <div class="text-gray-400 text-xs">Last Campaign Performance</div>
-          </div>
-        </div>
-        <canvas id="websiteViewChart" height="120"></canvas>
-        <div class="flex items-center mt-4 text-xs text-gray-400">
-          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path d="M17 16l4-4m0 0l-4-4m4 4H7" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          campaign sent 2 days ago
-        </div>
-      </div>
-      <!-- Daily Profits -->
-      <div class="glow-card p-6 flex flex-col hover:shadow-xl transition-shadow duration-300">
+    <!-- Daily Profits Chart: Full Width Under Top Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+      <div class="glow-card p-6 flex flex-col hover:shadow-xl transition-shadow duration-300 col-span-1 md:col-span-3" style="min-height: 340px;">
         <div class="flex items-center mb-4">
           <div class="bg-green-100 text-green-700 rounded-full p-2 mr-3">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -394,17 +372,17 @@
             <div class="text-gray-400 text-xs">Your Daily Performance</div>
           </div>
         </div>
-        <canvas id="dailySalesChart" height="120"></canvas>
+        <canvas id="dailySalesChart" height="160"></canvas>
         <div class="flex items-center mt-4 text-xs text-gray-400">
           <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <circle cx="12" cy="12" r="10"/>
             <path d="M12 6v6l4 2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          updated 4 min ago
+          updated recently
         </div>
       </div>
     </div>
-    <!-- Tasks Box (single, replaces completed tasks box) -->
+    <!-- Tasks Box -->
     <div class="glow-card p-8 flex flex-col gap-4 max-w-3xl mx-auto mt-8">
       <div class="flex items-center mb-2">
         <div class="bg-[#3dff90]/20 text-[#3dff90] rounded-full p-2 mr-3 shadow">
@@ -432,114 +410,6 @@
       <!-- Tasks List -->
       <div id="tasksList" class="mt-2 flex flex-col gap-3"></div>
     </div>
-    <script>
-      const dateInput = document.getElementById('tasksDate');
-      const today = new Date().toISOString().slice(0, 10);
-      dateInput.value = today;
-      const tasksList = document.getElementById('tasksList');
-      const taskInput = document.getElementById('taskInput');
-      const addTaskForm = document.getElementById('addTaskForm');
-      const addTaskMessage = document.getElementById('addTaskMessage');
-      const dateLabel = document.getElementById('tasksDateLabel');
-
-      function updateDateLabel() {
-        const d = new Date(dateInput.value);
-        dateLabel.textContent = `(Selected: ${isNaN(d) ? '' : d.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })})`;
-      }
-      updateDateLabel();
-
-      async function fetchTasks(date) {
-        const resp = await fetch(`/api/tasks?date=${date}`);
-        if (!resp.ok) return [];
-        return await resp.json();
-      }
-
-      async function renderTasks() {
-        const date = dateInput.value;
-        const tasks = await fetchTasks(date);
-        tasksList.innerHTML = '';
-        tasks.forEach(task => {
-          const taskDiv = document.createElement('div');
-          taskDiv.className = "flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3 shadow-sm border border-gray-200";
-          const textSpan = document.createElement('span');
-          textSpan.className = "flex-1 text-lg font-bold text-gray-800";
-          textSpan.textContent = task.comment;
-          taskDiv.appendChild(textSpan);
-
-          // Actions: Edit, Delete
-          const actionsDiv = document.createElement('div');
-          actionsDiv.className = "flex items-center gap-3 ml-2";
-
-          // Edit
-          const editBtn = document.createElement('button');
-          editBtn.type = "button";
-          editBtn.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="#888" stroke-width="2" viewBox="0 0 24 24"><path d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a2 2 0 01-2.828 0L9 13z" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-          editBtn.onclick = async () => {
-            const newComment = prompt("Edit task:", task.comment);
-            if (newComment !== null && newComment.trim() !== "") {
-              await fetch(`/api/tasks/${task.id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ comment: newComment })
-              });
-              renderTasks();
-            }
-          };
-          actionsDiv.appendChild(editBtn);
-
-          // Delete
-          const delBtn = document.createElement('button');
-          delBtn.type = "button";
-          delBtn.innerHTML = `<svg class="w-6 h-6" fill="none" stroke="#ff3d3d" stroke-width="2.5" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-          delBtn.onclick = async () => {
-            if (confirm("Delete this task?")) {
-              await fetch(`/api/tasks/${task.id}`, { method: 'DELETE' });
-              renderTasks();
-            }
-          };
-          actionsDiv.appendChild(delBtn);
-
-          taskDiv.appendChild(actionsDiv);
-          tasksList.appendChild(taskDiv);
-        });
-      }
-
-      addTaskForm.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        const comment = taskInput.value.trim();
-        if (comment) {
-          const date = dateInput.value;
-          const resp = await fetch('/api/tasks', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ comment, date })
-          });
-          if (resp.ok) {
-            taskInput.value = "";
-            addTaskMessage.textContent = "";
-            renderTasks();
-          } else {
-            addTaskMessage.textContent = "Failed to add task.";
-          }
-        } else {
-          addTaskMessage.textContent = "Please enter a task.";
-        }
-      });
-
-      taskInput.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          addTaskForm.requestSubmit();
-        }
-      });
-
-      dateInput.addEventListener('change', () => {
-        updateDateLabel();
-        renderTasks();
-      });
-
-      renderTasks();
-    </script>
     <!-- Share Profit Popup Dialog -->
     <div id="shareProfitDialog" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
       <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative">
@@ -574,4 +444,3 @@
   <script src="{{ url_for('static', filename='js/home.js') }}"></script>
 </body>
 </html>
-``` 
