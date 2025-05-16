@@ -4,7 +4,7 @@ from flask import send_from_directory, abort
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from app import db
-from app.models import User, Trade, Image, Share
+from app.models import User, Trade, Image, Share, Task
 from app.blueprints import main
 from app.db_tools import can_user_access_image, generate_feed_items, get_ids_from_filename, get_image_filename_from_ids
 from datetime import datetime, timedelta
@@ -89,7 +89,7 @@ def entry():
 @main.route('/entry/delete', methods=['POST'])
 def delete_entry():
     if 'user_id' not in session:
-        return redirect(url_for('login'))
+        return redirect(url_for('main.login'))
 
     try:
         # Get the date from the request
@@ -169,7 +169,7 @@ def logout():
 @main.route('/feed')
 def feed():
     if 'user_id' not in session:
-        return redirect(url_for('login'))
+        return redirect(url_for('main.login'))
 
     #
     # feed_items
@@ -187,7 +187,7 @@ def feed():
 def protected_image(filename):
     if 'user_id' not in session:
         flash('You must be logged in to view this image.', 'error')
-        return redirect(url_for('login'))
+        return redirect(url_for('main.login'))
 
     img_dir = os.path.join(current_app.root_path, 'static', 'img')
     if not os.path.isfile(os.path.join(img_dir, filename)):
@@ -243,7 +243,8 @@ def api_create_image():
 
         create_image(int(amount), date_range, file_path)
 
-        if shared_user_id:
+        # Only share if the ID is different to that of the user
+        if shared_user_id and shared_user_id != session['user_id']:
             # add user to shared list
             share_entry = Share(
                 share_type="image",
@@ -363,3 +364,49 @@ def get_profits():
         return jsonify({'month_profits': profits}), 200
     except Exception as e:
         return jsonify({'error': 'An error occurred while fetching profits.'}), 500
+
+@main.route('/api/tasks', methods=['GET'])
+def get_tasks():
+    if 'user_id' not in session:
+        return jsonify({'error': 'Not logged in'}), 401
+    date_str = request.args.get('date')
+    if not date_str:
+        return jsonify({'error': 'Missing date'}), 400
+    date = datetime.strptime(date_str, '%Y-%m-%d').date()
+    tasks = Task.query.filter_by(user_id=session['user_id'], date=date).all()
+    return jsonify([{'id': t.task_id, 'comment': t.comment} for t in tasks])
+
+@main.route('/api/tasks', methods=['POST'])
+def add_task():
+    if 'user_id' not in session:
+        return jsonify({'error': 'Not logged in'}), 401
+    data = request.get_json()
+    comment = data.get('comment', '').strip()
+    date_str = data.get('date')
+    if not comment or not date_str:
+        return jsonify({'error': 'Missing comment or date'}), 400
+    date = datetime.strptime(date_str, '%Y-%m-%d').date()
+    task = Task(user_id=session['user_id'], comment=comment, date=date)
+    db.session.add(task)
+    db.session.commit()
+    return jsonify({'id': task.task_id, 'comment': task.comment})
+
+@main.route('/api/tasks/<int:task_id>', methods=['PUT'])
+def update_task(task_id):
+    if 'user_id' not in session:
+        return jsonify({'error': 'Not logged in'}), 401
+    data = request.get_json()
+    comment = data.get('comment', '').strip()
+    task = Task.query.filter_by(task_id=task_id, user_id=session['user_id']).first_or_404()
+    task.comment = comment
+    db.session.commit()
+    return jsonify({'id': task.task_id, 'comment': task.comment})
+
+@main.route('/api/tasks/<int:task_id>', methods=['DELETE'])
+def delete_task(task_id):
+    if 'user_id' not in session:
+        return jsonify({'error': 'Not logged in'}), 401
+    task = Task.query.filter_by(task_id=task_id, user_id=session['user_id']).first_or_404()
+    db.session.delete(task)
+    db.session.commit()
+    return jsonify({'result': 'success'})

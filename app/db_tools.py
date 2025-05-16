@@ -52,10 +52,17 @@ def generate_feed_items(user_id):
             # This is optional and depends on your requirements
             pass
 
-        if author:
-            item["author"] = author.username
-        else:
-            item["author"] = None
+        item["author"] = author.username if author else None
+        feed_items.append(item)
 
+    images = Image.query.filter_by(author_id=user_id).all()
+    for image in images:
+        image_filename = get_image_filename_from_ids(image.author_id, image.image_id)
+        author = User.query.filter_by(user_id=image.author_id).first()
+        item = {
+            "type": "image",
+            "image": image_filename,
+            "author": author.username if author else None
+        }
         feed_items.append(item)
     return feed_items

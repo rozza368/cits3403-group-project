@@ -1,0 +1,26 @@
+<header class="relative z-10 w-full flex flex-col md:flex-row items-center justify-between px-8 py-6 bg-black text-white">
+  <!-- Logo and Navigation Links Grouped Together -->
+  <div class="flex items-center flex-1 min-w-0 space-x-8 w-full md:w-auto">
+    <img src="{{ url_for('static', filename='logo2.png') }}" alt="TradeM8" class="h-10 drop-shadow flex-shrink-0">
+    <nav class="flex-1 min-w-0">
+      <div class="flex items-center space-x-8 overflow-x-auto">
+        <a href="/" class="uppercase text-xs tracking-widest font-extrabold text-white hover:text-[#3dff90] transition whitespace-nowrap">Home</a>
+        <a href="/index" class="uppercase text-xs tracking-widest font-extrabold text-white hover:text-[#3dff90] transition whitespace-nowrap">Calendar</a>
+        <a href="/feed" class="uppercase text-xs tracking-widest font-extrabold text-white hover:text-[#3dff90] transition whitespace-nowrap">Feed</a>
+      </div>
+    </nav>
+  </div>
+
+  <!-- Right Side Buttons -->
+  <div class="flex items-center space-x-2 flex-shrink-0 w-full md:w-auto justify-end mt-4 md:mt-0">
+    <button id="shareProfitBtn" type="button" class="px-4 py-2 bg-[#3dff90] text-black rounded font-bold uppercase text-xs tracking-widest shadow hover:bg-[#2be66e] transition">
+      Share Profit Info
+    </button>
+    <form method="POST" action="{{ url_for('main.logout') }}">
+      <button type="submit" class="px-4 py-2 bg-[#ff3d3d] text-white rounded font-bold uppercase text-xs tracking-widest shadow hover:bg-red-700 transition">
+        Logout
+      </button>
+    </form>
+  </div>
+</header>
+
