@@ -134,12 +134,13 @@ async function updateCharts() {
             datasets: [{
                 label: 'Sales',
                 data: monthProfits,
-                borderColor: '#3b82f6',
-                backgroundColor: 'rgba(59,130,246,0.1)',
+                borderColor: '#1affb2', // changed from '#3b82f6'
+                backgroundColor: 'rgba(26,255,178,0.1)', // subtle fill
                 tension: 0.3,
                 fill: true,
                 pointRadius: 3,
-                pointBackgroundColor: '#3b82f6'
+                pointBackgroundColor: '#1affb2', // changed from '#3b82f6'
+                pointBorderColor: '#1affb2' // changed from '#3b82f6'
             }]
         },
         options: {

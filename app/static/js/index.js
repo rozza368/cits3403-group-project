@@ -53,7 +53,7 @@ async function renderCalendar(date) {
     const isCurrentMonth = (month === currentMonth && year === currentYear);
     nextMonthBtn.disabled = isCurrentMonth;
     nextMonthBtn.classList.toggle("text-gray-300", isCurrentMonth);
-    nextMonthBtn.classList.toggle("text-blue-600", !isCurrentMonth);
+    nextMonthBtn.classList.toggle("text-[#1affb2]", !isCurrentMonth);
     nextMonthBtn.classList.toggle("cursor-not-allowed", isCurrentMonth);
     nextMonthBtn.classList.toggle("hover:underline", !isCurrentMonth);
 
@@ -84,42 +84,41 @@ async function renderCalendar(date) {
             const prevDay = prevMonthLastDate - (firstDay - weekDayIndex - 1);
             const savedProfit = (await fetchProfits(prevMonthYear, prevMonth + 1)).month_profits.find(p => p.day === prevDay)?.profit || 0;
 
-            box.className = "border rounded-lg p-2 h-20 flex flex-col justify-start items-start relative bg-gray-100 text-gray-400 cursor-not-allowed";
+            box.className = "calendar-cell inactive flex flex-col justify-start items-center";
             box.innerHTML = `
-            <span class="absolute top-1 left-1 text-sm">${prevDay}</span>
-            <span class="mt-6 ml-1 text-sm text-green-500 font-medium">${savedProfit ? `$${savedProfit}` : ''}</span>
+              <span class="absolute top-1 left-1 text-sm">${prevDay}</span>
+              <span class="calendar-profit positive">${savedProfit ? `$${savedProfit}` : ''}</span>
             `;
         } else if (!isAfterLast) {
             const thisDate = new Date(year, month, day);
-            const dayOfWeek = thisDate.getDay(); // 0 = Sun, 6 = Sat
             const isFuture = thisDate > today;
             const capturedDay = day;
 
-            box.className = "border rounded-lg p-2 h-20 flex flex-col justify-start items-start relative";
-
+            box.className = "calendar-cell flex flex-col justify-start items-center";
             if (isFuture) {
-                box.classList.add("bg-gray-200", "text-gray-400", "cursor-not-allowed");
+                box.classList.add("inactive");
             } else {
-                box.classList.add("cursor-pointer", "hover:bg-gray-100");
+                box.classList.add("cursor-pointer", "hover:shadow-lg");
                 box.addEventListener("click", () => {
                     window.location.href = `/entry?day=${capturedDay}&month=${month + 1}&year=${year}&returnMonth=${month + 1}&returnYear=${year}`;
                 });
             }
 
-            box.innerHTML = `
-            <span class="absolute top-1 left-1 text-sm">${capturedDay}</span>
-            <span id="profit-${capturedDay}" class="mt-6 ml-1 text-sm font-medium"></span>
-            `;
-
+            // Highlight today
             if (thisDate.toDateString() === today.toDateString()) {
-                box.classList.add("border-4", "border-blue-500");
+                box.classList.add("selected", "today");
             }
+
+            box.innerHTML = `
+              <span class="absolute top-1 left-1 text-sm text-white" style="left: 50%;transform:translateX(-50%);">${capturedDay}</span>
+              <span id="profit-${capturedDay}" class="calendar-profit"></span>
+            `;
 
             const savedProfit = month_profits.find(p => p.day === capturedDay)?.profit || 0;
             if (savedProfit) {
                 const profitEl = box.querySelector(`#profit-${capturedDay}`);
                 profitEl.textContent = `$${savedProfit}`;
-                profitEl.classList.add(savedProfit < 0 ? "text-red-600" : "text-green-600");
+                profitEl.classList.add(savedProfit < 0 ? "negative" : "positive");
                 weekProfit += savedProfit;
             }
 
@@ -127,10 +126,10 @@ async function renderCalendar(date) {
         } else {
             const savedProfit = (await fetchProfits(nextMonthYear, nextMonth + 1)).month_profits.find(p => p.day === nextDay)?.profit || 0;
 
-            box.className = "border rounded-lg p-2 h-20 flex flex-col justify-start items-start relative bg-gray-100 text-gray-400 cursor-not-allowed";
+            box.className = "calendar-cell inactive flex flex-col justify-start items-center";
             box.innerHTML = `
-            <span class="absolute top-1 left-1 text-sm">${nextDay}</span>
-            <span class="mt-6 ml-1 text-sm text-green-500 font-medium">${savedProfit ? `$${savedProfit}` : ''}</span>
+              <span class="absolute top-1 left-1 text-sm">${nextDay}</span>
+              <span class="calendar-profit positive">${savedProfit ? `$${savedProfit}` : ''}</span>
             `;
             nextDay++;
         }
