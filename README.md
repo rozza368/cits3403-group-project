@@ -2,19 +2,23 @@
 2025 Agile Web Development Project
 
 ## Purpose
-This web application is a trade journal specifically designed for day traders, emphasizing not just trading strategies and techniques, but also the critical role of psychology in successful trading. While trading involves learning the right strategies, it is often said that 10% of trading is about technique and 90% is about controlling emotions. A trader’s profitability is heavily influenced by their emotional discipline and their ability to learn from both wins and losses.
+This web application is a trade journal platform for day traders, providing tools to log, analyze, and reflect on trades. The app enables users to record trade details, upload profit/loss data, and attach up to five images per trade for visual review. Users can tag trades with emotions and rule-following status, helping them identify patterns in their trading behavior and decision-making.
 
-In day trading, you don’t truly lose until you give up. The real test of a trader’s success lies in how they respond after a losing trade. A loss, when executed according to a well-thought-out plan, is simply a part of your strategy’s edge. However, the value of a loss is only realized if you learn from it and refine your approach for the next trade.
+The platform emphasizes self-improvement through structured journaling, allowing traders to track their progress, learn from both successful and unsuccessful trades, and refine their strategies over time. The tagging and analytics features help users evaluate adherence to trading plans, and adapt to changing market conditions.
 
-Many traders end up blowing their accounts not because their setup failed, but because they let their emotions take control. They might over-leverage, chase trades, or act impulsively due to FOMO (fear of missing out) or greed, putting money above strategy. A $200 risk would not wipe out a $2,000 account if the trader stays disciplined. The journal helps traders avoid these pitfalls by providing a non-emotional space to reflect on past trades. It acts as a reminder to avoid the mistakes made in previous emotional states and helps them stick to their trading rules.
+Additionally, the app includes a social feature where users can generate and share monthly profit summaries as images, fostering friendly competition and motivation within their trading networks. By providing a clear, organized, and emotion-free space for trade review, the journal supports traders in building discipline, confidence, and consistent performance.
 
-Journaling is essential to a trader’s growth. This app allows users to upload their profits and attach up to five images of their trades, enabling them to review their actions in an objective, emotion-free context. The journal not only reinforces good habits but also builds confidence by highlighting positive outcomes and identifying areas for improvement.
+## Design and Use of Application
 
-Users can track their emotions and evaluate whether they’ve followed their personal trading rules through a tagging system. The journal also helps traders refine their strategies and adapt to changing market conditions, all while building the confidence needed to make informed, disciplined decisions.
+The application is built using Flask for the backend and HTML/CSS/JavaScript for the frontend. Users can register and log in to access their personal trade journals. The main dashboard provides an overview of recent trades and key statistics.
 
-Additionally, the app includes a feature that allows users to share their monthly profit status in the form of an image. This encourages a healthy level of competition among friends and networks, motivating users to perform better. The desire to outperform others can fuel self-improvement, pushing traders to sharpen their skills and continue learning in the process.
+**Key Features:**
+- **Trade Logging:** Users can add new trades by entering details such as date, ticker, entry/exit points, profit/loss, and notes. Up to five images (e.g., charts or screenshots) can be attached to each trade.
+- **Analytics:** The app provides visualizations and summaries, such as monthly profit charts, win/loss ratios, and most common emotional tags.
+- **Social Sharing:** Users can generate monthly summary images and share them with others to encourage accountability and motivation.
+- **Trade Review:** Users can filter and search past trades, making it easy to review performance and identify patterns.
 
-(TODO: describe design and use of application)
+The intuitive interface is designed for quick data entry and easy navigation, supporting traders in building consistent habits and improving their strategies over time.
 
 ## Group Members
 
@@ -36,22 +40,30 @@ source application-env/bin/activate
 ```
 
 On Windows:
-```bash
-py -m venv application-env
-.\application-env\Scripts\activate
-```
 
-**Then, install required packages:**
+1. **Open a terminal and navigate to the project folder:**
+   ```powershell
+   cd cits3403-group-project
+   ```
 
-```bash
-pip install -r requirements.txt
-```
+2. **Create and activate a Python virtual environment:**
+   ```powershell
+   py -m venv application-env
+   .\application-env\Scripts\activate
+   ```
 
-**Run the server:**
+3. **Install required packages:**
+   ```powershell
+   pip install -r requirements.txt
+   ```
 
-```bash
-flask --app main.py run
-```
+4. **Run the server:**
+   ```powershell
+   flask --app main.py run
+   ```
+
+> **Note:**  
+> Make sure you are in the `cits3403-group-project` directory (where `requirements.txt` and `main.py` are located) before running the install and server commands.
 
 ## Running Tests
 

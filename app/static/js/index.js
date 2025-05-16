@@ -92,13 +92,12 @@ async function renderCalendar(date) {
         } else if (!isAfterLast) {
             const thisDate = new Date(year, month, day);
             const dayOfWeek = thisDate.getDay(); // 0 = Sun, 6 = Sat
-            const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
             const isFuture = thisDate > today;
             const capturedDay = day;
 
             box.className = "border rounded-lg p-2 h-20 flex flex-col justify-start items-start relative";
 
-            if (isWeekend || isFuture) {
+            if (isFuture) {
                 box.classList.add("bg-gray-200", "text-gray-400", "cursor-not-allowed");
             } else {
                 box.classList.add("cursor-pointer", "hover:bg-gray-100");
@@ -117,7 +116,7 @@ async function renderCalendar(date) {
             }
 
             const savedProfit = month_profits.find(p => p.day === capturedDay)?.profit || 0;
-            if (savedProfit && !isWeekend) {
+            if (savedProfit) {
                 const profitEl = box.querySelector(`#profit-${capturedDay}`);
                 profitEl.textContent = `$${savedProfit}`;
                 profitEl.classList.add(savedProfit < 0 ? "text-red-600" : "text-green-600");

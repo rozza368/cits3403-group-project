@@ -5,63 +5,74 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Profit Calendar</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet" />
+  <style>
+    @font-face {
+      font-family: 'Coolvetica';
+      src: url("{{ url_for('static', filename='fonts/Coolvetica Rg.otf') }}") format('opentype');
+      font-weight: normal;
+      font-style: normal;
+    }
+    body {
+      font-family: 'Coolvetica', 'Inter', 'sans-serif';
+      background-image: url('{{ url_for('static', filename='images/background.png') }}');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      min-height: 100vh;
+    }
+    .bg-white-glass {
+      background: rgba(255,255,255,0.8);
+      backdrop-filter: blur(8px);
+    }
+    .particle-wrapper {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .particle {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background-color: #3dff90;
+      border-radius: 50%;
+      opacity: 0;
+      animation: floatUp 15s linear infinite;
+      animation-fill-mode: both;
+    }
+    @keyframes floatUp {
+      0% { transform: translateY(0) translateX(0); opacity: 0; }
+      10% { opacity: 0.6; }
+      50% { transform: translateY(-100vh) translateX(20px); opacity: 0.3; }
+      100% { transform: translateY(-200vh) translateX(-20px); opacity: 0; }
+    }
+  </style>
 </head>
-<body class="bg-gray-100 text-gray-800 flex flex-col items-center min-h-screen py-10" style="padding-top:0">
-  <!-- Top Navigation -->
-  <header class="w-full bg-white shadow px-6 py-4 flex items-center justify-between">
-    <div class="flex items-center space-x-2">
-      <span class="text-gray-400">Dashboard</span>
-      <span class="mx-1">/</span>
-      <span class="font-semibold text-gray-700">Feed</span>
-    </div>
-    <div class="flex-1 flex justify-center">
-      <input type="text" placeholder="Search" class="w-80 px-4 py-2 border rounded focus:outline-none focus:border-blue-400 text-sm bg-gray-50"/>
-    </div>
-    <div class="flex items-center space-x-4">
-      <a href="/" class="text-gray-500 hover:text-blue-600" title="Home">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path d="M3 12l2-2m0 0l7-7 7 7m-9 2v6m0 0h6m-6 0v6m6-6v6m0 0h6m-6 0v6" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </a>
-      <a href="/index" class="text-gray-500 hover:text-blue-600" title="Calendar">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <rect x="3" y="4" width="18" height="18" rx="2" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M16 2v4M8 2v4M3 10h18" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </a>
-      <!-- TODO: change icon to something more intuitive -->
-      <a href="/feed" class="text-gray-500 hover:text-blue-600" title="Feed">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <circle cx="12" cy="12" r="1.5"/>
-          <circle cx="19.5" cy="12" r="1.5"/>
-          <circle cx="4.5" cy="12" r="1.5"/>
-        </svg>
-      </a>
-      <button class="text-gray-500 hover:text-blue-600" title="Notifications">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </button>
-      <form method="POST" action="{{ url_for('logout') }}" class="inline">
-        <button type="submit" class="text-gray-500 hover:text-blue-600" title="Profile">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <circle cx="12" cy="7" r="4" />
-            <path d="M5.5 21a8.38 8.38 0 0113 0" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-        </button>
-      </form>
-    </div>
-  </header>
-  <main class="flex-1 w-full max-w-7xl mx-auto px-4 py-8">
+<body class="relative min-h-screen flex flex-col overflow-x-hidden">
+  <!-- Decorative Floating Particles -->
+  <div class="particle-wrapper pointer-events-none absolute inset-0 z-0">
+    <div class="particle" style="top: 105%; left: 5%; animation-duration: 14s; animation-delay: 0s;"></div>
+    <div class="particle" style="top: 110%; left: 10%; animation-duration: 16s; animation-delay: 2s;"></div>
+    <div class="particle" style="top: 115%; left: 15%; animation-duration: 18s; animation-delay: 4s;"></div>
+    <div class="particle" style="top: 102%; left: 20%; animation-duration: 12s; animation-delay: 1s;"></div>
+    <div class="particle" style="top: 108%; left: 25%; animation-duration: 20s; animation-delay: 3s;"></div>
+    <div class="particle" style="top: 112%; left: 30%; animation-duration: 15s; animation-delay: 5s;"></div>
+    <div class="particle" style="top: 118%; left: 35%; animation-duration: 17s; animation-delay: 2s;"></div>
+  </div>
+  <!-- Navbar -->
+  {% include "_navbar.html" %}
+  <main class="flex-1 w-full max-w-7xl mx-auto px-4 py-8 z-10">
     {% for item in feed_items %}
-    <div class="bg-white rounded-lg shadow p-5 flex flex-col mb-6">
+    <div class="bg-white-glass rounded-lg shadow p-5 flex flex-col mb-6">
       <div class="space-x-3">
         {% if item['type'] == 'image' %}
-          <h1>Image</h1>
+          <h1 class="font-bold text-lg mb-2">Image</h1>
           <img src="{{ url_for('static', filename='img/' + item['image']) }}" class="w-256 object-cover rounded" alt="Feed Image" />
           <p>{{ item['content'] }}</p>
         {% else %}
-          <h1>Post</h1>
+          <h1 class="font-bold text-lg mb-2">Post</h1>
           <p>{{ item['content'] }}</p>
         {% endif %}
         <span class="text-gray-500 text-sm mt-2">Posted by {{ item['author'] }}</span>

@@ -1,0 +1,26 @@
+<header class="relative z-10 w-full flex items-center px-4 py-4 bg-black shadow">
+  <!-- Logo and Title -->
+  <div class="flex items-center min-w-max">
+    <img src="{{ url_for('static', filename='logo2.png') }}" alt="Cryptocal" class="h-9 mr-2 drop-shadow" />
+    <span class="font-extrabold text-2xl tracking-wide" style="font-family: Coolvetica, Arial, sans-serif; color: #3dff90;">
+      Personal Trading Journal
+    </span>
+  </div>
+  <!-- Centered Navigation Links -->
+  <div class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
+    <nav class="flex items-center space-x-16">
+      <a href="/" class="uppercase text-xs tracking-widest font-extrabold text-white hover:text-[#3dff90] transition">Home</a>
+      <a href="/index" class="uppercase text-xs tracking-widest font-extrabold text-white hover:text-[#3dff90] transition">Calendar</a>
+      <a href="/feed" class="uppercase text-xs tracking-widest font-extrabold text-white hover:text-[#3dff90] transition">Feed</a>
+    </nav>
+  </div>
+  <!-- Logout Button and Share Profit Button -->
+  <div class="ml-auto flex items-center space-x-2">
+    <button id="shareProfitBtn" type="button" class="ml-2 px-4 py-2 bg-[#3dff90] text-black rounded font-bold uppercase text-xs tracking-widest shadow hover:bg-[#2be66e] transition">
+      Share Profit Info
+    </button>
+    <form method="POST" action="{{ url_for('logout') }}">
+      <button type="submit" class="ml-2 px-4 py-2 bg-[#ff3d3d] text-white rounded font-bold uppercase text-xs tracking-widest shadow hover:bg-red-700 transition">Logout</button>
+    </form>
+  </div>
+</header>
