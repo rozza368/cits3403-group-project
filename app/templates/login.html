@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login | Cryptocal</title>
+  <title>Login | TradeM8</title>
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet" />
   <style>
@@ -139,7 +140,7 @@
   <!-- Top Bar -->
   <header class="relative z-10 w-full flex items-center justify-between px-8 py-6 bg-black text-white">
 
-    <img src="{{ url_for('static', filename='logo2.png') }}" alt="Cryptocal" class="h-10 drop-shadow">
+    <img src="{{ url_for('static', filename='logo2.png') }}" alt="TradeM8" class="h-10 drop-shadow">
 
     <div class="flex items-center space-x-4">
       <form method="POST" action="{{ url_for('login') }}" class="flex items-center space-x-2 bg-white/80 rounded-full px-4 py-2 shadow">
@@ -172,7 +173,7 @@
         Welcome to Your <span class="text-[#3dff90]">Personal Trading Journal</span>
       </h1>
       <p class="text-lg text-white mb-8 max-w-2xl mx-auto">
-        Track, analyse, and improve your trading performance with <span class="font-bold text-[#3dff90]">Cryptocal</span>.
+        Track, analyse, and improve your trading performance with <span class="font-bold text-[#3dff90]">TradeM8</span>.
         Securely log your trades, visualize your progress, and stay updated with the latest crypto prices and news.
       </p>
 
