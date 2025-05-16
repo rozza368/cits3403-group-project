@@ -242,7 +242,8 @@ def api_create_image():
 
         create_image(int(amount), date_range, file_path)
 
-        if shared_user_id:
+        # Only share if the ID is different to that of the user
+        if shared_user_id and shared_user_id != session['user_id']:
             # add user to shared list
             share_entry = Share(
                 share_type="image",
