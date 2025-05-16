@@ -4,7 +4,7 @@ from flask import send_from_directory, abort
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from app import app, db
-from app.models import User, Trade, Image, Share
+from app.models import User, Trade, Image, Share, Task
 from app.db_tools import can_user_access_image, generate_feed_items, get_ids_from_filename, get_image_filename_from_ids
 from datetime import datetime, timedelta
 from app.generate_image import create_image
@@ -363,3 +363,49 @@ def get_profits():
         return jsonify({'month_profits': profits}), 200
     except Exception as e:
         return jsonify({'error': 'An error occurred while fetching profits.'}), 500
+
+@app.route('/api/tasks', methods=['GET'])
+def get_tasks():
+    if 'user_id' not in session:
+        return jsonify({'error': 'Not logged in'}), 401
+    date_str = request.args.get('date')
+    if not date_str:
+        return jsonify({'error': 'Missing date'}), 400
+    date = datetime.strptime(date_str, '%Y-%m-%d').date()
+    tasks = Task.query.filter_by(user_id=session['user_id'], date=date).all()
+    return jsonify([{'id': t.task_id, 'comment': t.comment} for t in tasks])
+
+@app.route('/api/tasks', methods=['POST'])
+def add_task():
+    if 'user_id' not in session:
+        return jsonify({'error': 'Not logged in'}), 401
+    data = request.get_json()
+    comment = data.get('comment', '').strip()
+    date_str = data.get('date')
+    if not comment or not date_str:
+        return jsonify({'error': 'Missing comment or date'}), 400
+    date = datetime.strptime(date_str, '%Y-%m-%d').date()
+    task = Task(user_id=session['user_id'], comment=comment, date=date)
+    db.session.add(task)
+    db.session.commit()
+    return jsonify({'id': task.task_id, 'comment': task.comment})
+
+@app.route('/api/tasks/<int:task_id>', methods=['PUT'])
+def update_task(task_id):
+    if 'user_id' not in session:
+        return jsonify({'error': 'Not logged in'}), 401
+    data = request.get_json()
+    comment = data.get('comment', '').strip()
+    task = Task.query.filter_by(task_id=task_id, user_id=session['user_id']).first_or_404()
+    task.comment = comment
+    db.session.commit()
+    return jsonify({'id': task.task_id, 'comment': task.comment})
+
+@app.route('/api/tasks/<int:task_id>', methods=['DELETE'])
+def delete_task(task_id):
+    if 'user_id' not in session:
+        return jsonify({'error': 'Not logged in'}), 401
+    task = Task.query.filter_by(task_id=task_id, user_id=session['user_id']).first_or_404()
+    db.session.delete(task)
+    db.session.commit()
+    return jsonify({'result': 'success'})
