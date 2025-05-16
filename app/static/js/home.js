@@ -185,7 +185,6 @@ updateDashboard();
 updateCharts();
 fetchCryptoPrices();
 
-// --- Listen for changes in localStorage (from calendar) ---
 window.addEventListener('storage', () => {
     updateDashboard();
     updateCharts();
