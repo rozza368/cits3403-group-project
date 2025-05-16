@@ -71,6 +71,7 @@
           <h1 class="font-bold text-lg mb-2">Image</h1>
           <img src="{{ url_for('static', filename='img/' + item['image']) }}" class="w-256 object-cover rounded" alt="Feed Image" />
           <p>{{ item['content'] }}</p>
+          <a href="{{ url_for('static', filename='img/' + item['image']) }}" download class="inline-block mt-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition">Download</a>
         {% else %}
           <h1 class="font-bold text-lg mb-2">Post</h1>
           <p>{{ item['content'] }}</p>
