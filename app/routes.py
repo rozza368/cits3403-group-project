@@ -1,42 +1,43 @@
 import os
-from flask import render_template, request, redirect, url_for, flash, session, jsonify
+from flask import render_template, request, redirect, url_for, flash, session, jsonify, current_app
 from flask import send_from_directory, abort
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
-from app import app, db
+from app import db
 from app.models import User, Trade, Image, Share, Task
+from app.blueprints import main
 from app.db_tools import can_user_access_image, generate_feed_items, get_ids_from_filename, get_image_filename_from_ids
 from datetime import datetime, timedelta
 from app.generate_image import create_image
 import requests
 import os
 
-UPLOAD_FOLDER = os.path.join(app.root_path, 'static', 'images')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+def get_upload_folder():
+    return os.path.join(current_app.root_path, 'static', 'images')
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@app.route('/')
+@main.route('/')
 def home():
     if 'user_id' not in session:
-        return redirect(url_for('login'))
-
+        return redirect(url_for('main.login'))
+    
     return render_template('home.html')
 
-@app.route('/index')
+@main.route('/index')
 def index():
     if 'user_id' not in session:
-        return redirect(url_for('login'))
-
+        return redirect(url_for('main.login'))
+    
     return render_template('index.html')
 
-@app.route('/entry', methods=['GET', 'POST'])
+@main.route('/entry', methods=['GET', 'POST'])
 def entry():
     if 'user_id' not in session:
-        return redirect(url_for('login'))
+        return redirect(url_for('main.login'))
 
     if request.method == 'POST':
         try:
@@ -62,7 +63,7 @@ def entry():
             for image in image_files:
                 if image and allowed_file(image.filename):
                     filename = secure_filename(image.filename)
-                    image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                    image.save(os.path.join(get_upload_folder(), filename))
                     image_filenames.append(filename)
 
             if existing_trade:
@@ -85,10 +86,10 @@ def entry():
 
     return render_template('entry.html')
 
-@app.route('/entry/delete', methods=['POST'])
+@main.route('/entry/delete', methods=['POST'])
 def delete_entry():
     if 'user_id' not in session:
-        return redirect(url_for('login'))
+        return redirect(url_for('main.login'))
 
     try:
         # Get the date from the request
@@ -116,7 +117,7 @@ def delete_entry():
         print("Error deleting entry:", e)
         return jsonify({'error': 'An error occurred while deleting the entry.'}), 500
 
-@app.route('/signup', methods=['GET', 'POST'])
+@main.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
         try:
@@ -125,50 +126,50 @@ def signup():
             password = request.form.get('password')
             if not username or not password:
                 flash('Username and password are required!', 'error')
-                return redirect(url_for('signup'))
+                return redirect(url_for('main.signup'))
             existing_user = User.query.filter_by(username=username).first()
             if existing_user:
                 flash('Username already exists!', 'error')
-                return redirect(url_for('signup'))
+                return redirect(url_for('main.signup'))
             hashed_password = generate_password_hash(password)
             new_user = User(username=username, email=email, password_hash=hashed_password)
             db.session.add(new_user)
             db.session.commit()
             flash('Account created successfully!', 'success')
-            return redirect(url_for('login'))
+            return redirect(url_for('main.login'))
         except Exception as e:
             flash('An error occurred while creating your account.', 'error')
-            return redirect(url_for('signup'))
+            return redirect(url_for('main.signup'))
     return render_template('signup.html')
 
-@app.route('/login', methods=['GET', 'POST'])
+@main.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
         if not username or not password:
             flash('Username and password are required!', 'error')
-            return redirect(url_for('login'))
+            return redirect(url_for('main.login'))
         user = User.query.filter_by(username=username).first()
         if user and check_password_hash(user.password_hash, password):
             session['user_id'] = user.user_id  # or user.id depending on your model
             flash('Logged in successfully!', 'success')
-            return redirect(url_for('home'))
+            return redirect(url_for('main.home'))
         else:
             flash('Invalid username or password!', 'error')
-            return redirect(url_for('login'))
+            return redirect(url_for('main.login'))
     return render_template('login.html')
 
-@app.route('/logout', methods=['POST'])
+@main.route('/logout', methods=['POST'])
 def logout():
     session.clear()
     flash('Log out successful.', 'success')
-    return redirect(url_for('login'))
+    return redirect(url_for('main.login'))
 
-@app.route('/feed')
+@main.route('/feed')
 def feed():
     if 'user_id' not in session:
-        return redirect(url_for('login'))
+        return redirect(url_for('main.login'))
 
     #
     # feed_items
@@ -182,13 +183,13 @@ def feed():
     feed_items.reverse()  # order items as newest first
     return render_template('feed.html', feed_items=feed_items)
 
-@app.route('/static/img/<filename>')
+@main.route('/static/img/<filename>')
 def protected_image(filename):
     if 'user_id' not in session:
         flash('You must be logged in to view this image.', 'error')
-        return redirect(url_for('login'))
+        return redirect(url_for('main.login'))
 
-    img_dir = os.path.join(app.root_path, 'static', 'img')
+    img_dir = os.path.join(current_app.root_path, 'static', 'img')
     if not os.path.isfile(os.path.join(img_dir, filename)):
         abort(404)
 
@@ -197,7 +198,7 @@ def protected_image(filename):
         return send_from_directory(img_dir, filename)
     return jsonify({'error': 'Not authorised to access this file'}), 403
 
-@app.route('/api/create_image', methods=['POST', 'GET'])
+@main.route('/api/create_image', methods=['POST', 'GET'])
 def api_create_image():
     if 'user_id' not in session:
         return jsonify({'error': 'User not logged in.'}), 401
@@ -236,7 +237,7 @@ def api_create_image():
 
         # Get filename for the image
         filename = get_image_filename_from_ids(session['user_id'], new_image.image_id)
-        img_dir = os.path.join(app.root_path, 'static', 'img')
+        img_dir = os.path.join(current_app.root_path, 'static', 'img')
         os.makedirs(img_dir, exist_ok=True)
         file_path = os.path.join(img_dir, filename)
 
@@ -259,13 +260,13 @@ def api_create_image():
         db.session.rollback()
         return jsonify({'error': 'Failed to create image.'}), 500
 
-@app.route('/api/user_list', methods=['GET'])
+@main.route('/api/user_list', methods=['GET'])
 def get_user_list():
     users = User.query.with_entities(User.username).all()
     user_list = {"users": [user[0] for user in users]}
     return user_list
 
-@app.route('/api/entry', methods=['GET'])
+@main.route('/api/entry', methods=['GET'])
 def get_entry():
     try:
         # Get query parameters for the date
@@ -301,13 +302,13 @@ def get_entry():
         print("Error fetching entry:", e)
         return jsonify({'error': 'An error occurred while fetching the entry.'}), 500
 
-@app.route('/api/stats')
+@main.route('/api/stats')
 def api_stats():
     user_count = User.query.count()
     trade_count = Trade.query.count()
     return jsonify({'users': user_count, 'trades': trade_count})
 
-@app.route('/api/cryptonews')
+@main.route('/api/cryptonews')
 def api_cryptonews():
     try:
         url = "https://min-api.cryptocompare.com/data/v2/news/?lang=EN"
@@ -328,7 +329,7 @@ def api_cryptonews():
         print("Crypto news error:", e)
         return jsonify([]), 500
 
-@app.route('/api/cryptoprices')
+@main.route('/api/cryptoprices')
 def api_cryptoprices():
     try:
         url = "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,binancecoin,cardano,dogecoin&vs_currencies=usd"
@@ -340,7 +341,7 @@ def api_cryptoprices():
         print("Crypto prices error:", e)
         return jsonify({}), 500
 
-@app.route('/api/profits', methods=['GET'])
+@main.route('/api/profits', methods=['GET'])
 def get_profits():
     try:
         # Get query parameters
@@ -364,7 +365,7 @@ def get_profits():
     except Exception as e:
         return jsonify({'error': 'An error occurred while fetching profits.'}), 500
 
-@app.route('/api/tasks', methods=['GET'])
+@main.route('/api/tasks', methods=['GET'])
 def get_tasks():
     if 'user_id' not in session:
         return jsonify({'error': 'Not logged in'}), 401
@@ -375,7 +376,7 @@ def get_tasks():
     tasks = Task.query.filter_by(user_id=session['user_id'], date=date).all()
     return jsonify([{'id': t.task_id, 'comment': t.comment} for t in tasks])
 
-@app.route('/api/tasks', methods=['POST'])
+@main.route('/api/tasks', methods=['POST'])
 def add_task():
     if 'user_id' not in session:
         return jsonify({'error': 'Not logged in'}), 401
@@ -390,7 +391,7 @@ def add_task():
     db.session.commit()
     return jsonify({'id': task.task_id, 'comment': task.comment})
 
-@app.route('/api/tasks/<int:task_id>', methods=['PUT'])
+@main.route('/api/tasks/<int:task_id>', methods=['PUT'])
 def update_task(task_id):
     if 'user_id' not in session:
         return jsonify({'error': 'Not logged in'}), 401
@@ -401,7 +402,7 @@ def update_task(task_id):
     db.session.commit()
     return jsonify({'id': task.task_id, 'comment': task.comment})
 
-@app.route('/api/tasks/<int:task_id>', methods=['DELETE'])
+@main.route('/api/tasks/<int:task_id>', methods=['DELETE'])
 def delete_task(task_id):
     if 'user_id' not in session:
         return jsonify({'error': 'Not logged in'}), 401
