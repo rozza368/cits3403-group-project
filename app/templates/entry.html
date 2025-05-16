@@ -7,6 +7,7 @@
   <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet" />
+  <link rel="stylesheet" href="https://use.typekit.net/cij8xdo.css">
   <style>
     @font-face {
       font-family: 'Coolvetica';
@@ -14,8 +15,11 @@
       font-weight: normal;
       font-style: normal;
     }
+    body, html, * {
+      font-family: 'din-2014', 'Inter', sans-serif;
+      font-weight: 600; /* demi */
+    }
     body {
-      font-family: 'Coolvetica', 'Inter', 'sans-serif';
       background-image: url('{{ url_for('static', filename='images/background.png') }}');
       background-size: cover;
       background-position: center;
@@ -49,6 +53,113 @@
       50% { transform: translateY(-100vh) translateX(20px); opacity: 0.3; }
       100% { transform: translateY(-200vh) translateX(-20px); opacity: 0; }
     }
+    .calendar-gradient-bg {
+      background: radial-gradient(ellipse at top left, #1a2a1f 60%, #0a0f0c 100%);
+      border: 1px solid #1affb2;
+      /*box-shadow: 0 0 32px 0 #1affb2, 0 0 0 2px #1affb2 inset;*/
+
+      border-radius: 1rem;
+      color: #fff;
+    }
+    .entry-glow-box {
+      background: rgba(10, 15, 12, 0.92);
+      border: 1px solid #1affb2;
+      border-radius: 1rem;
+      color: #fff;
+      /*box-shadow: 0 0 16px 0 #1affb2, 0 0 0 2px #1affb2 inset;*/
+    }
+    .entry-glow-box input,
+    .entry-glow-box textarea {
+      background: rgba(0,0,0,0.5);
+      color: #fff;
+      border: 1.5px solid #1affb2;
+    }
+    .entry-glow-box input:focus,
+    .entry-glow-box textarea:focus {
+      border-color: #1affb2;
+      box-shadow: 0 0 0 2px #1affb2;
+      outline: none;
+    }
+    .entry-glow-box label {
+      color: #1affb2;
+      font-weight: bold;
+    }
+    .entry-glow-box .text-gray-500,
+    .entry-glow-box .text-gray-700,
+    .entry-glow-box .text-gray-800 {
+      color: #1affb2 !important;
+    }
+    .entry-glow-box .text-red-500,
+    .entry-glow-box .text-red-600 {
+      color: #ff4b4b !important;
+    }
+    .entry-glow-box .text-blue-600,
+    .entry-glow-box .text-blue-700 {
+      color: #1afff2 !important;
+    }
+    .entry-glow-box .font-bold,
+    .entry-glow-box .font-extrabold {
+      color: #fff !important;
+    }
+    .entry-glow-box .bg-white,
+    .entry-glow-box .bg-gray-50 {
+      background: rgba(10, 15, 12, 0.92) !important;
+      color: #fff !important;
+    }
+    .entry-glow-box .shadow,
+    .entry-glow-box .shadow-lg,
+    .entry-glow-box .shadow-xl {
+      box-shadow: 0 0 16px 0 #1affb2, 0 0 0 2px #1affb2 inset !important;
+    }
+    .entry-glow-box .rounded-lg,
+    .entry-glow-box .rounded-2xl {
+      border-radius: 1rem !important;
+    }
+    .entry-glow-box .hover\:bg-gray-100:hover {
+      background: rgba(26,255,178,0.08) !important;
+    }
+    .entry-glow-box .text-base,
+    .entry-glow-box .text-lg,
+    .entry-glow-box .text-xl,
+    .entry-glow-box .text-2xl {
+      color: #fff !important;
+    }
+    .entry-glow-box .text-sm {
+      color: #1affb2 !important;
+    }
+    .entry-glow-box .font-semibold {
+      color: #fff !important;
+    }
+    .entry-glow-box .text-xs {
+      color: #1affb2 !important;
+    }
+    .entry-glow-box .text-green-600,
+    .entry-glow-box .text-green-700 {
+      color: #1affb2 !important;
+    }
+    .entry-glow-box .bg-blue-400 {
+      background: #1afff2 !important;
+      color: #0a0f0c !important;
+    }
+    .entry-glow-box .bg-red-100 {
+      background: rgba(255,75,75,0.15) !important;
+      color: #ff4b4b !important;
+    }
+    .entry-glow-box .bg-blue-600,
+    .entry-glow-box .bg-blue-700 {
+      background: #1afff2 !important;
+      color: #0a0f0c !important;
+    }
+    .entry-glow-box .bg-red-500,
+    .entry-glow-box .bg-red-600 {
+      background: #ff4b4b !important;
+      color: #fff !important;
+    }
+    .entry-glow-box .bg-green-500,
+    .entry-glow-box .bg-green-600 {
+      background: #1affb2 !important;
+      color: #0a0f0c !important;
+    }
   </style>
 </head>
 <body class="relative min-h-screen flex flex-col overflow-x-hidden">
@@ -65,7 +176,7 @@
   <!-- Navbar -->
   {% include "_navbar.html" %}
   <main class="flex-1 w-full max-w-3xl mx-auto px-4 py-8 z-10">
-    <div class="bg-white-glass rounded-2xl shadow-md p-6 w-full flex flex-col h-full">
+    <div class="calendar-gradient-bg rounded-2xl p-6 w-full flex flex-col h-full">
       <!-- Header -->
       <div class="flex justify-between items-center mb-2">
         <button onclick="window.location.href='/index'"
@@ -78,7 +189,7 @@
       <!-- Scrollable Content -->
       <div class="flex-1 overflow-y-auto space-y-4">
         <!-- Carousel -->
-        <div id="carouselWrapper" class="relative w-full hidden">
+        <div id="carouselWrapper" class="relative w-full hidden entry-glow-box p-4">
           <div class="relative w-full h-[50vh]">
             <img id="carouselImage" class="w-full h-full object-contain rounded-xl" />
             <button id="prevBtn" class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white shadow rounded-full w-8 h-8 flex items-center justify-center text-xl">&#8592;</button>
@@ -89,32 +200,32 @@
           </div>
         </div>
         <!-- Upload -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Upload or Paste Images (Max 5)</label>
+        <div class="entry-glow-box p-4">
+          <label class="block text-sm font-medium mb-1">Upload or Paste Images (Max 5)</label>
           <input type="file" id="imageInput" accept="image/*" multiple class="w-full text-sm" />
-          <p id="imageCount" class="text-sm text-gray-500 mt-1">0/5 images uploaded</p>
+          <p id="imageCount" class="text-sm mt-1">0/5 images uploaded</p>
         </div>
         <!-- Profit -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Profit</label>
+        <div class="entry-glow-box p-4">
+          <label class="block text-sm font-medium mb-1">Profit</label>
           <input type="number" id="profitInput" class="border rounded p-2 w-full text-sm"
                 placeholder="Enter profit for the day" />
         </div>
         <!-- Notes -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Trade Notes</label>
+        <div class="entry-glow-box p-4">
+          <label class="block text-sm font-medium mb-1">Trade Notes</label>
           <textarea id="notesInput" rows="2" class="border rounded p-2 w-full text-sm resize-none"
                     placeholder="Write your notes for the day..."></textarea>
         </div>
       </div>
       <!-- Save Button -->
-      <div class="mt-4">
+      <div class="mt-4 flex flex-col gap-2">
         <button id="saveBtn"
-          class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded shadow w-full">
+          class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded shadow w-full transition">
           Save
         </button>
         <button id="deleteEntryBtn"
-          class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded shadow w-full mt-2 hidden">
+          class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded shadow w-full mt-2 hidden transition">
           Delete Entry
         </button>
       </div>

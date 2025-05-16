@@ -9,20 +9,23 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet" />
   <style>
-    @font-face {
-      font-family: 'Coolvetica';
-      src: url("{{ url_for('static', filename='fonts/Coolvetica Rg.otf') }}") format('opentype');
-      font-weight: normal;
-      font-style: normal;
-    }
     body {
-      font-family: 'Coolvetica', 'Inter', 'sans-serif';
+      font-family: 'din-2014', 'Inter', sans-serif;
+      font-weight: 600; /* demi */
       background-image: url('{{ url_for('static', filename='images/background.png') }}');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
       min-height: 100vh;
+
+    * {
+      font-family: inherit;
     }
+
+    html {
+      font-family: 'din-2014', 'Inter', sans-serif;
+    }
+
     .shine-card::before {
       content: '';
       position: absolute;
@@ -34,21 +37,21 @@
       transform: translateX(-100%) rotate(25deg);
       pointer-events: none;
     }
+
     .shine-card.animate-shine::before {
       animation: shineEffect 1s ease forwards;
     }
+
     @keyframes shineEffect {
-      0% {
-        transform: translateX(-100%) rotate(25deg);
-      }
-      100% {
-        transform: translateX(100%) rotate(25deg);
-      }
+      0% { transform: translateX(-100%) rotate(25deg); }
+      100% { transform: translateX(100%) rotate(25deg); }
     }
+
     .bg-white-glass {
       background: rgba(255,255,255,0.8);
       backdrop-filter: blur(8px);
     }
+
     /* Floating Green Particles */
     .particle-wrapper {
       position: absolute;
@@ -57,6 +60,7 @@
       pointer-events: none;
       z-index: 0;
     }
+
     .particle {
       position: absolute;
       width: 6px;
@@ -67,24 +71,199 @@
       animation: floatUp 15s linear infinite;
       animation-fill-mode: both;
     }
+
     @keyframes floatUp {
-      0% {
-        transform: translateY(0) translateX(0);
-        opacity: 0;
-      }
-      10% {
-        opacity: 0.6;
-      }
-      50% {
-        transform: translateY(-100vh) translateX(20px);
-        opacity: 0.3;
-      }
-      100% {
-        transform: translateY(-200vh) translateX(-20px);
-        opacity: 0;
-      }
+      0% { transform: translateY(0) translateX(0); opacity: 0; }
+      10% { opacity: 0.6; }
+      50% { transform: translateY(-100vh) translateX(20px); opacity: 0.3; }
+      100% { transform: translateY(-200vh) translateX(-20px); opacity: 0; }
+    }
+
+    .calendar-gradient-bg {
+      background: radial-gradient(ellipse at top left, #1a2a1f 60%, #0a0f0c 100%);
+      border: 2px solid #1affb2;
+      box-shadow: 0 0 32px 0 #1affb2, 0 0 0 2px #1affb2 inset;
+    }
+    .glow-card {
+      background: rgba(10, 15, 12, 0.92);
+      border: 1px solid #1affb2;
+      border-radius: 1rem;
+      color: #fff;
+    }
+    .glow-card .text-gray-500,
+    .glow-card .text-gray-400,
+    .glow-card .text-gray-700,
+    .glow-card .text-gray-800 {
+      color: #1affb2 !important;
+    }
+    .glow-card .text-green-600,
+    .glow-card .text-green-700 {
+      color: #1affb2 !important;
+    }
+    .glow-card .text-blue-600,
+    .glow-card .text-blue-700 {
+      color: #1afff2 !important;
+    }
+    .glow-card .text-black {
+      color: #fff !important;
+    }
+    .glow-card input,
+    .glow-card select,
+    .glow-card textarea {
+      background: rgba(0,0,0,0.5);
+      color: #fff;
+      border-color: #1affb2;
+    }
+    .glow-card input:focus,
+    .glow-card select:focus,
+    .glow-card textarea:focus {
+      border-color: #1affb2;
+      box-shadow: 0 0 0 2px #1affb2;
+    }
+    .glow-card .font-bold,
+    .glow-card .font-extrabold {
+      color: #fff !important;
+    }
+    .glow-card .bg-gray-50,
+    .glow-card .bg-white,
+    .glow-card .bg-white-glass {
+      background: rgba(10, 15, 12, 0.92) !important;
+      color: #fff !important;
+    }
+    .glow-card .border-gray-200,
+    .glow-card .border,
+    .glow-card .border-[#e5e7eb] {
+      border-color: #1affb2 !important;
+    }
+    
+    .glow-card .rounded-lg,
+    .glow-card .rounded-2xl {
+      border-radius: 1rem !important;
+    }
+    .glow-card .bg-blue-100,
+    .glow-card .bg-green-100 {
+      background: rgba(26,255,178,0.15) !important;
+      color: #1affb2 !important;
+    }
+    .glow-card .text-blue-100,
+    .glow-card .text-green-100 {
+      color: #1affb2 !important;
+    }
+    .glow-card .text-red-500,
+    .glow-card .text-red-600 {
+      color: #ff4b4b !important;
+    }
+    .glow-card .bg-blue-400 {
+      background: #1afff2 !important;
+      color: #0a0f0c !important;
+    }
+    .glow-card .bg-[#3dff90] {
+      background: #1affb2 !important;
+      color: #0a0f0c !important;
+    }
+    .glow-card .hover\:bg-[#2be66e]:hover {
+      background: #2be66e !important;
+      color: #0a0f0c !important;
+    }
+    .glow-card .border-[#3dff90] {
+      border-color: #1affb2 !important;
+    }
+    .glow-card .text-[#3dff90] {
+      color: #1affb2 !important;
+    }
+    .glow-card .bg-[#3dff90] {
+      background: #1affb2 !important;
+      color: #0a0f0c !important;
+    }
+    .glow-card .bg-[#3dff90]\/20 {
+      background: rgba(26,255,178,0.15) !important;
+      color: #1affb2 !important;
+    }
+    .glow-card .bg-white\/90 {
+      background: rgba(10, 15, 12, 0.92) !important;
+      color: #fff !important;
+    }
+    .glow-card .border-blue-400:focus {
+      border-color: #1affb2 !important;
+      box-shadow: 0 0 0 2px #1affb2 !important;
+    }
+    .glow-card .hover\:bg-gray-100:hover {
+      background: rgba(26,255,178,0.08) !important;
+    }
+    .glow-card .text-base,
+    .glow-card .text-lg,
+    .glow-card .text-xl,
+    .glow-card .text-2xl {
+      color: #fff !important;
+    }
+    .glow-card .text-sm {
+      color: #1affb2 !important;
+    }
+    .glow-card .font-semibold {
+      color: #fff !important;
+    }
+    .glow-card .font-extrabold {
+      color: #fff !important;
+    }
+    .glow-card .text-xs {
+      color: #1affb2 !important;
+    }
+    .glow-card .text-gray-600 {
+      color: #1affb2 !important;
+    }
+    .glow-card .text-gray-400 {
+      color: #1affb2 !important;
+    }
+    .glow-card .text-gray-700 {
+      color: #1affb2 !important;
+    }
+    .glow-card .text-gray-800 {
+      color: #1affb2 !important;
+    }
+    .glow-card .text-gray-900 {
+      color: #fff !important;
+    }
+    .glow-card .bg-gray-800 {
+      background: rgba(26,255,178,0.15) !important;
+      color: #1affb2 !important;
+    }
+    .glow-card .bg-blue-100 {
+      background: rgba(26,255,178,0.15) !important;
+      color: #1affb2 !important;
+    }
+    .glow-card .bg-green-100 {
+      background: rgba(26,255,178,0.15) !important;
+      color: #1affb2 !important;
+    }
+    .glow-card .bg-blue-400 {
+      background: #1afff2 !important;
+      color: #0a0f0c !important;
+    }
+    .glow-card .bg-white {
+      background: rgba(10, 15, 12, 0.92) !important;
+      color: #fff !important;
+    }
+    .glow-card .bg-gray-50 {
+      background: rgba(10, 15, 12, 0.92) !important;
+      color: #fff !important;
+    }
+    .glow-card .border-gray-200 {
+      border-color: #1affb2 !important;
+    }
+    .glow-card .border {
+      border-color: #1affb2 !important;
+    }
+    .glow-card .shadow,
+    .glow-card .shadow-lg,
+    
+    .glow-card .rounded-lg,
+    .glow-card .rounded-2xl {
+      border-radius: 1rem !important;
     }
   </style>
+
+  <link rel="stylesheet" href="https://use.typekit.net/cij8xdo.css">
+
 </head>
 <body class="relative min-h-screen flex flex-col overflow-x-hidden">
   <!-- Decorative Floating Particles -->
@@ -103,7 +282,7 @@
   <main class="flex-1 w-full max-w-7xl mx-auto px-4 py-8">
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
       <!-- Card 1: Today's Money -->
-      <div class="bg-white-glass rounded-lg shadow p-5 flex flex-col">
+      <div class="glow-card p-5 flex flex-col">
         <div class="flex items-center space-x-3">
           <div class="bg-gray-800 text-white rounded-full p-2">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -119,7 +298,7 @@
         <span id="todayMoneyChange" class="text-green-600 text-sm mt-2">+0% vs last week</span>
       </div>
       <!-- Card 2: Total Earnings This Month -->
-      <div class="bg-white-glass rounded-lg shadow p-5 flex flex-col">
+      <div class="glow-card p-5 flex flex-col">
         <div class="flex items-center space-x-3">
           <div class="bg-gray-800 text-white rounded-full p-2">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -134,7 +313,7 @@
         <span id="totalEarningsChange" class="text-gray-500 text-sm mt-2"></span>
       </div>
       <!-- Live Crypto Prices -->
-      <div class="bg-white-glass rounded-lg shadow p-5 flex flex-col min-h-[180px]">
+      <div class="glow-card p-5 flex flex-col min-h-[180px]">
         <div class="flex items-center space-x-3 mb-2">
           <div class="bg-blue-400 text-white rounded-full p-2">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -180,7 +359,7 @@
     <!-- Charts -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
       <!-- Website View -->
-      <div class="bg-white/90 rounded-2xl shadow-lg p-6 flex flex-col hover:shadow-xl transition-shadow duration-300">
+      <div class="glow-card p-6 flex flex-col hover:shadow-xl transition-shadow duration-300">
         <div class="flex items-center mb-4">
           <div class="bg-blue-100 text-blue-700 rounded-full p-2 mr-3">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -201,8 +380,8 @@
           campaign sent 2 days ago
         </div>
       </div>
-      <!-- Daily Sales -->
-      <div class="bg-white/90 rounded-2xl shadow-lg p-6 flex flex-col hover:shadow-xl transition-shadow duration-300">
+      <!-- Daily Profits -->
+      <div class="glow-card p-6 flex flex-col hover:shadow-xl transition-shadow duration-300">
         <div class="flex items-center mb-4">
           <div class="bg-green-100 text-green-700 rounded-full p-2 mr-3">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -211,8 +390,8 @@
             </svg>
           </div>
           <div>
-            <div class="font-bold text-lg text-green-700">Daily Sales</div>
-            <div class="text-gray-400 text-xs">15% increase in today sales</div>
+            <div class="font-bold text-lg text-green-700">Daily Profits</div>
+            <div class="text-gray-400 text-xs">Your Daily Performance</div>
           </div>
         </div>
         <canvas id="dailySalesChart" height="120"></canvas>
@@ -226,7 +405,7 @@
       </div>
     </div>
     <!-- Tasks Box (single, replaces completed tasks box) -->
-    <div class="bg-white/90 rounded-2xl shadow-xl p-8 flex flex-col gap-4 max-w-3xl mx-auto mt-8 border border-[#e5e7eb]">
+    <div class="glow-card p-8 flex flex-col gap-4 max-w-3xl mx-auto mt-8">
       <div class="flex items-center mb-2">
         <div class="bg-[#3dff90]/20 text-[#3dff90] rounded-full p-2 mr-3 shadow">
           <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -392,12 +571,6 @@
       </div>
     </div>
   </main>
-  <!-- Floating Settings Button -->
-  <button class="fixed bottom-6 right-6 bg-white/80 shadow-lg rounded-full p-3 hover:bg-gray-100">
-    <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-      <path d="M12 15.5A3.5 3.5 0 1112 8.5a3.5 3.5 0 010 7zm7.94-2.06a1 1 0 00.26-1.09l-1.1-3.18a1 1 0 00-.76-.67l-3.45-.5a1 1 0 00-.89.27l-2.45 2.45a1 1 0 00-.27.89l.5 3.45a1 1 0 00.67.76l3.18 1.1a1 1 0 001.09-.26l2.45-2.45a1 1 0 00.27-.89z" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-  </button>
   <script src="{{ url_for('static', filename='js/home.js') }}"></script>
 </body>
 </html>
