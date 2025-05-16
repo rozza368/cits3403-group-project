@@ -7,36 +7,128 @@
   <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet" />
+  <style>
+    @font-face {
+      font-family: 'Coolvetica';
+      src: url("{{ url_for('static', filename='fonts/Coolvetica Rg.otf') }}") format('opentype');
+      font-weight: normal;
+      font-style: normal;
+    }
+    .particle-wrapper {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .particle {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background-color: #3dff90;
+      border-radius: 50%;
+      opacity: 0;
+      animation: floatUp 15s linear infinite;
+      animation-fill-mode: both;
+    }
+    @keyframes floatUp {
+      0% { transform: translateY(0) translateX(0); opacity: 0; }
+      10% { opacity: 0.6; }
+      50% { transform: translateY(-100vh) translateX(20px); opacity: 0.3; }
+      100% { transform: translateY(-200vh) translateX(-20px); opacity: 0; }
+    }
+    .btn-glow {
+      background-color: #3dff90;
+      color: black;
+      border-radius: 9999px;
+      padding: 0.5rem 1.25rem;
+      font-weight: 600;
+      border: 2px solid transparent;
+      transition: all 0.3s ease-in-out;
+    }
+    .btn-glow:hover {
+      border-color: #3dff90;
+      box-shadow: 0 0 20px #3dff90;
+      transform: scale(1.05);
+    }
+    .shine-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(120deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0) 100%);
+      transform: translateX(-100%) rotate(25deg);
+      pointer-events: none;
+    }
+    .shine-card.animate-shine::before {
+      animation: shineEffect 1s ease forwards;
+    }
+    @keyframes shineEffect {
+      0% { transform: translateX(-100%) rotate(25deg); }
+      100% { transform: translateX(100%) rotate(25deg); }
+    }
+  </style>
 </head>
-<body class="relative min-h-screen bg-gradient-to-br from-[#e0e7ff] via-[#f1f5f9] to-[#cbd5e1] flex flex-col overflow-x-hidden">
-  <!-- Decorative Background Shapes -->
-  <div class="bg-shape1"></div>
-  <div class="bg-shape2"></div>
-  <div class="bg-shape3"></div>
+<body class="relative min-h-screen bg-cover bg-center flex flex-col overflow-x-hidden" style="background-image: url('{{ url_for('static', filename='images/background.png') }}');">
+  <!-- Floating Particles -->
+  <div class="particle-wrapper">
+    <div class="particle" style="top: 105%; left: 5%; animation-duration: 14s; animation-delay: 0s;"></div>
+    <div class="particle" style="top: 110%; left: 10%; animation-duration: 16s; animation-delay: 2s;"></div>
+    <div class="particle" style="top: 115%; left: 15%; animation-duration: 18s; animation-delay: 4s;"></div>
+    <div class="particle" style="top: 102%; left: 20%; animation-duration: 12s; animation-delay: 1s;"></div>
+    <div class="particle" style="top: 108%; left: 25%; animation-duration: 20s; animation-delay: 3s;"></div>
+    <div class="particle" style="top: 112%; left: 30%; animation-duration: 15s; animation-delay: 5s;"></div>
+    <div class="particle" style="top: 118%; left: 35%; animation-duration: 17s; animation-delay: 2s;"></div>
+    <div class="particle" style="top: 100%; left: 40%; animation-duration: 19s; animation-delay: 0s;"></div>
+    <div class="particle" style="top: 110%; left: 45%; animation-duration: 13s; animation-delay: 6s;"></div>
+    <div class="particle" style="top: 115%; left: 50%; animation-duration: 16s; animation-delay: 1s;"></div>
+    <div class="particle" style="top: 120%; left: 55%; animation-duration: 18s; animation-delay: 4s;"></div>
+    <div class="particle" style="top: 105%; left: 60%; animation-duration: 14s; animation-delay: 2s;"></div>
+    <div class="particle" style="top: 110%; left: 65%; animation-duration: 20s; animation-delay: 3s;"></div>
+    <div class="particle" style="top: 108%; left: 70%; animation-duration: 15s; animation-delay: 5s;"></div>
+    <div class="particle" style="top: 112%; left: 75%; animation-duration: 17s; animation-delay: 0s;"></div>
+    <div class="particle" style="top: 118%; left: 80%; animation-duration: 19s; animation-delay: 6s;"></div>
+    <div class="particle" style="top: 100%; left: 85%; animation-duration: 13s; animation-delay: 1s;"></div>
+    <div class="particle" style="top: 115%; left: 90%; animation-duration: 16s; animation-delay: 4s;"></div>
+    <div class="particle" style="top: 105%; left: 95%; animation-duration: 18s; animation-delay: 2s;"></div>
+    <div class="particle" style="top: 110%; left: 3%; animation-duration: 14s; animation-delay: 3s;"></div>
+    <div class="particle" style="top: 120%; left: 8%; animation-duration: 20s; animation-delay: 5s;"></div>
+    <div class="particle" style="top: 118%; left: 13%; animation-duration: 15s; animation-delay: 0s;"></div>
+    <div class="particle" style="top: 105%; left: 18%; animation-duration: 17s; animation-delay: 6s;"></div>
+    <div class="particle" style="top: 110%; left: 23%; animation-duration: 19s; animation-delay: 1s;"></div>
+    <div class="particle" style="top: 115%; left: 28%; animation-duration: 13s; animation-delay: 4s;"></div>
+    <div class="particle" style="top: 120%; left: 33%; animation-duration: 16s; animation-delay: 2s;"></div>
+    <div class="particle" style="top: 108%; left: 38%; animation-duration: 18s; animation-delay: 3s;"></div>
+    <div class="particle" style="top: 112%; left: 43%; animation-duration: 14s; animation-delay: 5s;"></div>
+    <div class="particle" style="top: 118%; left: 48%; animation-duration: 20s; animation-delay: 0s;"></div>
+    <div class="particle" style="top: 100%; left: 53%; animation-duration: 17s; animation-delay: 6s;"></div>
+  </div>
   <!-- Top Bar -->
-  <header class="relative z-10 w-full flex items-center justify-between px-8 py-6">
-    <span class="text-3xl font-black text-blue-700 tracking-tight drop-shadow">Cryptocal</span>
+  <header class="relative z-10 w-full flex items-center justify-between px-8 py-6 bg-black text-white">
+    <img src="{{ url_for('static', filename='logo2.png') }}" alt="Cryptocal" class="h-10 drop-shadow">
     <div class="flex items-center space-x-4">
-      <a href="{{ url_for('login') }}" class="ml-2 text-blue-700 font-bold hover:underline text-lg">Sign In</a>
+      <a href="{{ url_for('login') }}" class="ml-2 font-bold hover:underline text-lg text-white">Sign In</a>
     </div>
   </header>
   <!-- Main Section -->
   <main class="relative z-10 flex-1 flex flex-col items-center justify-center pt-8 pb-0">
     <div class="w-full max-w-md mx-auto bg-white/80 rounded-2xl shadow-md p-8">
-      <h2 class="text-2xl font-bold text-center mb-4 text-blue-700">Sign Up</h2>
+      <h2 class="text-2xl font-bold text-center mb-4 text-[#3dff90]">Sign Up</h2>
       <form id="signupForm" method="POST" action="{{ url_for('signup') }}" class="space-y-4">
         <div>
-          <label for="email" class="block text-sm font-medium text-blue-700">Email</label>
-          <input type="email" id="email" name="email" class="w-full px-3 py-2 rounded-full font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-blue-400 focus:bg-white" required />
+          <label for="email" class="block text-sm font-medium text-[#3dff90]">Email</label>
+          <input type="email" id="email" name="email" class="w-full px-3 py-2 rounded-full font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-[#3dff90] focus:bg-white" required />
         </div>
         <div>
-          <label for="username" class="block text-sm font-medium text-blue-700">Username</label>
-          <input type="text" id="username" name="username" class="w-full px-3 py-2 rounded-full font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-blue-400 focus:bg-white" required />
+          <label for="username" class="block text-sm font-medium text-[#3dff90]">Username</label>
+          <input type="text" id="username" name="username" class="w-full px-3 py-2 rounded-full font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-[#3dff90] focus:bg-white" required />
         </div>
         <div>
-          <label for="password" class="block text-sm font-medium text-blue-700">Password</label>
+          <label for="password" class="block text-sm font-medium text-[#3dff90]">Password</label>
           <div class="relative">
-            <input type="password" id="password" name="password" class="w-full px-3 py-2 rounded-full font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-blue-400 focus:bg-white pr-12" required />
+            <input type="password" id="password" name="password" class="w-full px-3 py-2 rounded-full font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-[#3dff90] focus:bg-white pr-12" required />
             <button type="button" onclick="togglePassword()" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
               <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -45,7 +137,9 @@
             </button>
           </div>
         </div>
-        <button type="submit" class="w-full tracking-wide font-semibold bg-gradient-to-r from-blue-500 to-blue-300 text-white px-5 py-2 rounded-full hover:from-blue-600 hover:to-blue-400 transition-all duration-300 ease-in-out focus:shadow-outline focus:outline-none">Sign Up</button>
+        <button type="submit" class="w-full tracking-wide font-semibold bg-[#3dff90] text-black px-5 py-2 rounded-full border-2 border-transparent hover:border-[#3dff90] hover:shadow-[0_0_20px_#3dff90] hover:scale-105 transition-all duration-300 ease-in-out focus:outline-none">
+          Sign Up
+        </button>
       </form>
     </div>
   </main>
