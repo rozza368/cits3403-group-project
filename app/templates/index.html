@@ -7,6 +7,7 @@
   <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet" />
+  <link rel="stylesheet" href="https://use.typekit.net/cij8xdo.css">
   <style>
     @font-face {
       font-family: 'Coolvetica';
@@ -14,8 +15,11 @@
       font-weight: normal;
       font-style: normal;
     }
+    body, html, * {
+      font-family: 'din-2014', 'Inter', sans-serif;
+      font-weight: 600; /* demi */
+    }
     body {
-      font-family: 'Coolvetica', 'Inter', 'sans-serif';
       background-image: url('{{ url_for('static', filename='images/background.png') }}');
       background-size: cover;
       background-position: center;
@@ -49,6 +53,49 @@
       50% { transform: translateY(-100vh) translateX(20px); opacity: 0.3; }
       100% { transform: translateY(-200vh) translateX(-20px); opacity: 0; }
     }
+    .calendar-gradient-bg {
+      background: radial-gradient(ellipse at top left, #1a2a1f 60%, #0a0f0c 100%);
+      border: 1.5px solid #1affb2;
+    }
+    .calendar-cell {
+      background: rgba(0,0,0,0.7);
+      border: 1.5px solid #1affb2;
+      /*box-shadow: 0 0 8px 0 #1affb2;*/
+      color: #fff;
+      position: relative;
+      border-radius: 0.75rem;
+      min-height: 5rem;
+      transition: box-shadow 0.2s;
+    }
+    .calendar-cell.inactive {
+      background: rgba(0,0,0,0.3);
+      color: #4b5563;
+      border: 1.5px solid #222;
+      box-shadow: none;
+    }
+    .calendar-cell.selected, .calendar-cell.today {
+      border: 1.5px solid #1affb2;
+      box-shadow: 0 0 5px 1px #1affb2, 0 0 0 2.5px #1affb2 inset;
+      background: rgba(0,0,0,0.7); /* Match regular active day background */
+      color: #fff;
+    }
+    .calendar-profit {
+      font-weight: bold;
+      font-size: 1.1rem;
+      margin-top: 1.5rem;
+      display: block;
+    }
+    .calendar-profit.positive { color: #1affb2; }
+    .calendar-profit.negative { color: #ff4b4b; }
+    .calendar-header {
+      background: rgba(0,0,0,0.8);
+      color: #1affb2;
+      border-radius: 0.75rem;
+      padding: 0.5rem 0;
+      font-weight: bold;
+      font-size: 1.1rem;
+      letter-spacing: 0.05em;
+    }
   </style>
 </head>
 <body class="relative min-h-screen flex flex-col overflow-x-hidden">
@@ -66,16 +113,23 @@
   {% include "_navbar.html" %}
   <main class="w-full flex justify-center mt-8 flex-1 z-10">
     <div class="w-full max-w-6xl px-4">
-      <div class="bg-white-glass rounded-2xl shadow-md p-6 w-full">
+      <div class="calendar-gradient-bg rounded-2xl p-6 w-full">
         <!-- Header -->
         <div class="flex justify-between items-center mb-4">
-          <button id="prevMonthBtn" class="text-blue-600 font-medium hover:underline">← Previous</button>
-          <h2 id="monthYear" class="text-2xl font-bold text-center"></h2>
-          <button id="nextMonthBtn" class="text-blue-600 font-medium hover:underline">Next →</button>
+          <button id="prevMonthBtn" class="text-[#1affb2] font-medium hover:underline">←</button>
+          <h2 id="monthYear" class="text-2xl font-bold text-center text-white"></h2>
+          <button id="nextMonthBtn" class="text-[#1affb2] font-medium hover:underline">→</button>
         </div>
         <!-- Weekday Headers -->
         <div class="grid grid-cols-8 gap-2 text-center font-semibold mb-2">
-          <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div><div>Total</div>
+          <div class="calendar-header">Mon</div>
+          <div class="calendar-header">Tue</div>
+          <div class="calendar-header">Wed</div>
+          <div class="calendar-header">Thu</div>
+          <div class="calendar-header">Fri</div>
+          <div class="calendar-header">Sat</div>
+          <div class="calendar-header">Sun</div>
+          <div class="calendar-header">Total</div>
         </div>
         <!-- Calendar Grid -->
         <div id="calendarGrid" class="flex flex-col gap-2"></div>
