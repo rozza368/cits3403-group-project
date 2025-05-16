@@ -35,3 +35,10 @@ class Share(db.Model):
     # refers to either trades.trade_id or images.image_id depending on share_type.
     trade_or_image_id = db.Column(db.Integer, primary_key=True, nullable=False)
     user_id_shared_to = db.Column(db.Integer, db.ForeignKey('users.user_id'), primary_key=True, nullable=False)
+
+class Task(db.Model):
+    __tablename__ = 'tasks'
+    task_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+    comment = db.Column(db.String(255), nullable=True)
+    date = db.Column(db.Date, nullable=False, unique=True)
