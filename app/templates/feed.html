@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Profit Calendar</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet" />
+  <style>
+    @font-face {
+      font-family: 'Coolvetica';
+      src: url("{{ url_for('static', filename='fonts/Coolvetica Rg.otf') }}") format('opentype');
+      font-weight: normal;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'DIN 2014';
+      src: url("{{ url_for('static', filename='fonts/DIN2014-Regular.ttf') }}") format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'DIN 2014';
+      src: url("{{ url_for('static', filename='fonts/DIN2014-Bold.ttf') }}") format('truetype');
+      font-weight: bold;
+      font-style: normal;
+    }
+    body, .font-din, header, nav, button, input, textarea, select, a, h1, h2, h3, h4, h5, h6, span, p, div {
+      font-family: 'DIN 2014', 'Inter', 'sans-serif' !important;
+    }
+    body {
+      background-image: url('{{ url_for('static', filename='images/background.png') }}');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      min-height: 100vh;
+    }
+    .bg-white-glass {
+      background: rgba(255,255,255,0.8);
+      backdrop-filter: blur(8px);
+    }
+    .particle-wrapper {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .particle {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background-color: #3dff90;
+      border-radius: 50%;
+      opacity: 0;
+      animation: floatUp 15s linear infinite;
+      animation-fill-mode: both;
+    }
+    @keyframes floatUp {
+      0% { transform: translateY(0) translateX(0); opacity: 0; }
+      10% { opacity: 0.6; }
+      50% { transform: translateY(-100vh) translateX(20px); opacity: 0.3; }
+      100% { transform: translateY(-200vh) translateX(-20px); opacity: 0; }
+    }
+  </style>
+</head>
+<body class="relative min-h-screen flex flex-col overflow-x-hidden font-din">
+  <!-- Decorative Floating Particles -->
+  <div class="particle-wrapper pointer-events-none absolute inset-0 z-0">
+    <div class="particle" style="top: 105%; left: 5%; animation-duration: 14s; animation-delay: 0s;"></div>
+    <div class="particle" style="top: 110%; left: 10%; animation-duration: 16s; animation-delay: 2s;"></div>
+    <div class="particle" style="top: 115%; left: 15%; animation-duration: 18s; animation-delay: 4s;"></div>
+    <div class="particle" style="top: 102%; left: 20%; animation-duration: 12s; animation-delay: 1s;"></div>
+    <div class="particle" style="top: 108%; left: 25%; animation-duration: 20s; animation-delay: 3s;"></div>
+    <div class="particle" style="top: 112%; left: 30%; animation-duration: 15s; animation-delay: 5s;"></div>
+    <div class="particle" style="top: 118%; left: 35%; animation-duration: 17s; animation-delay: 2s;"></div>
+  </div>
+  <!-- Navbar -->
+  {% include "_navbar.html" %}
+  <main class="flex-1 w-full max-w-7xl mx-auto px-4 py-8 z-10">
+    {% for item in feed_items %}
+    <div class="bg-white-glass rounded-lg shadow p-5 flex flex-col mb-6">
+      <div class="space-x-3">
+        {% if item['type'] == 'image' %}
+          <h1 class="font-bold text-lg mb-2">Image</h1>
+          <img src="{{ url_for('static', filename='img/' + item['image']) }}" class="w-256 object-cover rounded" alt="Feed Image" />
+          <p>{{ item['content'] }}</p>
+          <a href="{{ url_for('static', filename='img/' + item['image']) }}" download class="inline-block mt-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition">Download</a>
+        {% else %}
+          <h1 class="font-bold text-lg mb-2">Post</h1>
+          <p>{{ item['content'] }}</p>
+        {% endif %}
+        <span class="text-gray-500 text-sm mt-2">Posted by {{ item['author'] }}</span>
+      </div>
+    </div>
+    {% endfor %}
+  </main>
+</body>
+</html>

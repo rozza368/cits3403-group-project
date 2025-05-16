@@ -1,3 +1,9 @@
-flask
-flask-wtf
-flask-migrate
+alembic==1.15.2
+Flask==3.1.1
+Flask_Migrate==4.1.0
+flask_sqlalchemy==3.1.1
+Pillow==11.2.1
+Requests==2.32.3
+selenium==4.32.0
+SQLAlchemy==2.0.29
+Werkzeug==3.1.3

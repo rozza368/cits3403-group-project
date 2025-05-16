@@ -1,7 +1,7 @@
 // Fetch profits from the backend
-async function fetchProfits() {
+async function fetchProfits(year = new Date().getFullYear(), month = new Date().getMonth() + 1) {
     try {
-        const response = await fetch('/api/profits');
+        const response = await fetch(`/api/profits?year=${year}&month=${month}`);
         if (!response.ok) {
             console.error('Failed to fetch profits:', response.statusText);
             return { month_profits: [], last_week_profits: [] };
@@ -26,8 +26,10 @@ async function getLastWeekProfits() {
 
 // --- Update Dashboard Cards ---
 async function updateDashboard() {
-    const { month_profits } = await fetchProfits();
     const todayDate = new Date();
+    const year = todayDate.getFullYear();
+    const month = todayDate.getMonth() + 1;
+    const { month_profits } = await fetchProfits(year, month);
     const today = todayDate.getDate();
 
     // Today's profit
@@ -96,30 +98,10 @@ async function fetchUserList() {
 }
 
 // --- Chart.js Graphs ---
-let websiteViewChart, dailySalesChart, completedTasksChart;
+let dailySalesChart;
 
 async function updateCharts() {
-    const { last_week_profits, month_profits } = await fetchProfits();
-
-    // Website View: Bar chart for last 7 days
-    const weekLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-    if (websiteViewChart) websiteViewChart.destroy();
-    websiteViewChart = new Chart(document.getElementById('websiteViewChart').getContext('2d'), {
-        type: 'bar',
-        data: {
-            labels: weekLabels,
-            datasets: [{
-                label: 'Profit',
-                data: last_week_profits,
-                backgroundColor: '#4ade80',
-                borderRadius: 6,
-            }]
-        },
-        options: {
-            plugins: { legend: { display: false } },
-            scales: { y: { beginAtZero: true } }
-        }
-    });
+    const { month_profits } = await fetchProfits();
 
     // Daily Sales: Line chart for each month
     const monthLabels = month_profits.map(p => p.day);
@@ -132,12 +114,13 @@ async function updateCharts() {
             datasets: [{
                 label: 'Sales',
                 data: monthProfits,
-                borderColor: '#3b82f6',
-                backgroundColor: 'rgba(59,130,246,0.1)',
+                borderColor: '#1affb2',
+                backgroundColor: 'rgba(26,255,178,0.1)',
                 tension: 0.3,
                 fill: true,
                 pointRadius: 3,
-                pointBackgroundColor: '#3b82f6'
+                pointBackgroundColor: '#1affb2',
+                pointBorderColor: '#1affb2'
             }]
         },
         options: {
@@ -177,12 +160,96 @@ async function fetchCryptoPrices() {
     }
 }
 
+// --- Tasks Section ---
+const tasksDateInput = document.getElementById('tasksDate');
+const tasksList = document.getElementById('tasksList');
+const addTaskForm = document.getElementById('addTaskForm');
+const addTaskMessage = document.getElementById('addTaskMessage');
+
+// Set default date to today and fetch tasks
+if (tasksDateInput) {
+    tasksDateInput.valueAsDate = new Date();
+    fetchAndRenderTasks();
+    tasksDateInput.addEventListener('change', fetchAndRenderTasks);
+}
+
+async function fetchAndRenderTasks() {
+    const date = tasksDateInput.value;
+    tasksList.innerHTML = '<div class="text-gray-400">Loading...</div>';
+    try {
+        const resp = await fetch(`/api/tasks?date=${date}`);
+        const data = await resp.json();
+        if (Array.isArray(data)) {
+            if (data.length === 0) {
+                tasksList.innerHTML = '<div class="text-gray-400">No tasks for this day.</div>';
+            } else {
+                tasksList.innerHTML = data.map(task => `
+                    <div class="flex items-center justify-between bg-gray-800 rounded-lg px-4 py-2">
+                        <span>${task.comment}</span>
+                        <button class="delete-task-btn text-red-500" data-id="${task.id}">Delete</button>
+                    </div>
+                `).join('');
+            }
+        } else {
+            tasksList.innerHTML = `<div class="text-red-500">${data.error || 'Failed to load tasks.'}</div>`;
+        }
+    } catch {
+        tasksList.innerHTML = '<div class="text-red-500">Failed to load tasks.</div>';
+    }
+}
+
+// Add new task
+if (addTaskForm) {
+    addTaskForm.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        addTaskMessage.textContent = '';
+        const comment = document.getElementById('taskInput').value.trim();
+        const date = tasksDateInput.value;
+        if (!comment) {
+            addTaskMessage.textContent = 'Task cannot be empty.';
+            return;
+        }
+        try {
+            const resp = await fetch('/api/tasks', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ comment, date })
+            });
+            const data = await resp.json();
+            if (resp.ok) {
+                addTaskForm.reset();
+                fetchAndRenderTasks();
+            } else {
+                addTaskMessage.textContent = data.error || 'Failed to add task.';
+            }
+        } catch {
+            addTaskMessage.textContent = 'Network error.';
+        }
+    });
+}
+
+// Delete task
+if (tasksList) {
+    tasksList.addEventListener('click', async function (e) {
+        if (e.target.classList.contains('delete-task-btn')) {
+            const id = e.target.getAttribute('data-id');
+            if (confirm('Delete this task?')) {
+                try {
+                    const resp = await fetch(`/api/tasks/${id}`, { method: 'DELETE' });
+                    if (resp.ok) {
+                        fetchAndRenderTasks();
+                    }
+                } catch {}
+            }
+        }
+    });
+}
+
 // --- Initial Render ---
 updateDashboard();
 updateCharts();
 fetchCryptoPrices();
 
-// --- Listen for changes in localStorage (from calendar) ---
 window.addEventListener('storage', () => {
     updateDashboard();
     updateCharts();
@@ -192,10 +259,10 @@ window.addEventListener('storage', () => {
 setInterval(fetchCryptoPrices, 600000); // 10 minutes
 
 // Display list of users upon clicking on search bar
-document.getElementById('search-bar-top').addEventListener('focus', async function() {
+document.getElementById('usernameSearch').addEventListener('focus', async function () {
     const userListResult = await fetchUserList();
     const userList = userListResult["users"];
-    const dropdown = document.getElementById('search-dropdown');
+    const dropdown = document.getElementById('username-search-dropdown');
 
     if (userList && userList.length > 0) {
         dropdown.innerHTML = userList.map(user => `
@@ -210,9 +277,9 @@ document.getElementById('search-bar-top').addEventListener('focus', async functi
 });
 
 // Filter dropdown menu based on search bar input
-document.getElementById('search-bar-top').addEventListener('input', function() {
+document.getElementById('usernameSearch').addEventListener('input', function () {
     const searchTerm = this.value.toLowerCase();
-    const dropdown = document.getElementById('search-dropdown');
+    const dropdown = document.getElementById('username-search-dropdown');
     const items = dropdown.querySelectorAll('.search-item');
 
     items.forEach(item => {
@@ -225,134 +292,81 @@ document.getElementById('search-bar-top').addEventListener('input', function() {
     });
 });
 
+// Insert clicked username into the input field
+document.getElementById('username-search-dropdown').addEventListener('click', function (e) {
+    const target = e.target.closest('.search-item');
+    if (target && target.textContent) {
+        document.getElementById('usernameSearch').value = target.textContent.trim();
+        this.classList.add('hidden');
+    }
+});
+
 // Close search bar dropdown when clicking outside
-document.addEventListener('click', function(e) {
-    const searchBar = document.getElementById('search-bar-top');
-    const dropdown = document.getElementById('search-dropdown');
+document.addEventListener('click', function (e) {
+    const searchBar = document.getElementById('usernameSearch');
+    const dropdown = document.getElementById('username-search-dropdown');
     if (!searchBar.contains(e.target)) {
         dropdown.classList.add('hidden');
     }
 });
 
+// Sharing profits section
+const shareProfitBtn = document.getElementById('shareProfitBtn');
+const shareProfitDialog = document.getElementById('shareProfitDialog');
+const closeShareProfitDialog = document.getElementById('closeShareProfitDialog');
+const shareProfitForm = document.getElementById('shareProfitForm');
+const shareProfitMessage = document.getElementById('shareProfitMessage');
+
+const dateFrom = document.getElementById('dateFrom').value;
+const dateTo = document.getElementById('dateTo').value;
+
+shareProfitBtn.addEventListener('click', () => {
+    shareProfitDialog.classList.remove('hidden');
+    shareProfitMessage.textContent = '';
+    shareProfitForm.reset();
+});
+
+closeShareProfitDialog.addEventListener('click', () => {
+    shareProfitDialog.classList.add('hidden');
+});
+
+shareProfitDialog.addEventListener('click', (e) => {
+    if (e.target === shareProfitDialog) {
+        shareProfitDialog.classList.add('hidden');
+    }
+});
+
+shareProfitForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const dateFrom = document.getElementById('dateFrom').value;
+    const dateTo = document.getElementById('dateTo').value;
+    const username = document.getElementById('usernameSearch').value;
+
+    try {
+        const response = await fetch('/api/create_image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                date_from: dateFrom,
+                date_to: dateTo,
+                share: username
+            })
+        });
+        if (response.ok) {
+            shareProfitMessage.textContent = 'Profit info shared successfully!';
+            shareProfitMessage.className = 'mt-3 text-green-600 text-sm';
+            setTimeout(() => shareProfitDialog.classList.add('hidden'), 1200);
+        } else {
+            shareProfitMessage.textContent = 'Failed to share profit info.';
+            shareProfitMessage.className = 'mt-3 text-red-600 text-sm';
+        }
+    } catch {
+        shareProfitMessage.textContent = 'Network error.';
+        shareProfitMessage.className = 'mt-3 text-red-600 text-sm';
+    }
+});
+
 document.addEventListener('DOMContentLoaded', function () {
-// --- Chart.js Graphs: Improved Styles ---
-// Website View Chart
-if (window.websiteViewChart) window.websiteViewChart.destroy();
-fetch('/api/entry')
-    .then(res => res.json())
-    .then(data => {
-    const ctx = document.getElementById('websiteViewChart').getContext('2d');
-    window.websiteViewChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-        labels: data.labels || ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-        datasets: [{
-            label: 'Views',
-            data: data.views || [120, 190, 300, 500, 200, 300, 400],
-            borderColor: '#3b82f6',
-            backgroundColor: ctx.createLinearGradient(0, 0, 0, 200),
-            pointBackgroundColor: '#fff',
-            pointBorderColor: '#3b82f6',
-            pointRadius: 5,
-            fill: true,
-            tension: 0.4
-        }]
-        },
-        options: {
-        plugins: {
-            legend: { display: false },
-            tooltip: {
-            backgroundColor: '#3b82f6',
-            titleColor: '#fff',
-            bodyColor: '#fff',
-            borderColor: '#fff',
-            borderWidth: 1
-            }
-        },
-        scales: {
-            x: { grid: { display: false }, ticks: { color: '#64748b' } },
-            y: { grid: { color: '#e0e7ef' }, ticks: { color: '#64748b' }, beginAtZero: true }
-        }
-        }
-    });
-    });
-
-// Daily Sales Chart
-if (window.dailySalesChart) window.dailySalesChart.destroy();
-fetch('/api/profits')
-    .then(res => res.json())
-    .then(data => {
-    const ctx = document.getElementById('dailySalesChart').getContext('2d');
-    window.dailySalesChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-        labels: data.labels || ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-        datasets: [{
-            label: 'Sales',
-            data: data.sales || [12, 19, 3, 5, 2, 3, 7],
-            backgroundColor: [
-            '#34d399', '#60a5fa', '#818cf8', '#fbbf24', '#f87171', '#38bdf8', '#a78bfa'
-            ],
-            borderRadius: 8,
-            barPercentage: 0.6
-        }]
-        },
-        options: {
-        plugins: {
-            legend: { display: false },
-            tooltip: {
-            backgroundColor: '#10b981',
-            titleColor: '#fff',
-            bodyColor: '#fff',
-            borderColor: '#fff',
-            borderWidth: 1
-            }
-        },
-        scales: {
-            x: { grid: { display: false }, ticks: { color: '#64748b' } },
-            y: { grid: { color: '#e0e7ef' }, ticks: { color: '#64748b' }, beginAtZero: true }
-        }
-        }
-    });
-    });
-
-// Completed Tasks Chart
-if (window.completedTasksChart) window.completedTasksChart.destroy();
-fetch('/api/entry')
-    .then(res => res.json())
-    .then(data => {
-    const ctx = document.getElementById('completedTasksChart').getContext('2d');
-    window.completedTasksChart = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-        labels: ['Completed', 'Pending'],
-        datasets: [{
-            data: data.completed || [75, 25],
-            backgroundColor: ['#a78bfa', '#e0e7ef'],
-            borderWidth: 2,
-            borderColor: '#fff'
-        }]
-        },
-        options: {
-        plugins: {
-            legend: {
-            display: true,
-            position: 'bottom',
-            labels: { color: '#64748b', font: { weight: 'bold' } }
-            },
-            tooltip: {
-            backgroundColor: '#a78bfa',
-            titleColor: '#fff',
-            bodyColor: '#fff',
-            borderColor: '#fff',
-            borderWidth: 1
-            }
-        },
-        cutout: '70%'
-        }
-    });
-    });
-
 // Fetch crypto prices and update the table
 async function fetchCryptoPricesTable() {
     try {
